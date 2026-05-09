@@ -1,0 +1,29 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  variant?: 'wide' | 'prose' | 'landing';
+  eyebrow?: string;
+}
+
+const { title, description, variant = 'prose', eyebrow } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} pageType={variant === 'landing' ? 'landing' : 'docs'}>
+  <div class="container">
+    <article class={`page-${variant}`} data-pagefind-body>
+      {eyebrow && <p class="eyebrow page-eyebrow">{eyebrow}</p>}
+      <slot name="header" />
+      <slot />
+    </article>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  .page-prose { max-width: var(--measure); margin-inline: auto; padding-block: var(--sp-7) var(--sp-9); }
+  .page-prose .eyebrow { margin-bottom: var(--sp-3); display: inline-block; }
+  .page-wide { padding-block: var(--sp-7) var(--sp-9); }
+  .page-landing { padding-block: 0 var(--sp-9); }
+</style>

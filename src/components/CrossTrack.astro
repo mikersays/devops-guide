@@ -1,0 +1,38 @@
+---
+import { TRACKS, TRACK_ORDER, type TrackId } from '../lib/tracks';
+
+interface CrossTrackEntry {
+  track: TrackId;
+  href: string;
+  title: string;
+  exists: boolean;
+}
+
+interface Props {
+  current: TrackId;
+  entries: CrossTrackEntry[];
+}
+
+const { current, entries } = Astro.props;
+const others = TRACK_ORDER.filter((t) => t !== current);
+const byTrack = new Map(entries.map((e) => [e.track, e]));
+---
+
+<section class="crosstrack" aria-label="Same section in other tracks">
+  <p class="crosstrack-label">In other tracks</p>
+  <ul class="crosstrack-list">
+    {others.map((t) => {
+      const entry = byTrack.get(t);
+      if (!entry || !entry.exists) return null;
+      const meta = TRACKS[t];
+      return (
+        <li>
+          <a href={entry.href}>
+            <span class="ct-track" style={`color:${meta.accent}`}>{meta.short}</span>
+            <span class="ct-title">{entry.title}</span>
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</section>

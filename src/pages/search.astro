@@ -1,0 +1,31 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<PageLayout title="Search" description="Search the DevOps Field Manual" variant="prose" eyebrow="Search">
+  <header slot="header">
+    <h1>Search the manual</h1>
+    <p class="search-summary">Index built at compile time. Press <kbd class="shortcut">/</kbd> from any page to open the quick search.</p>
+  </header>
+  <div id="search-mount-page" class="pagefind-ui-mount"></div>
+</PageLayout>
+
+<script define:vars={{ base }}>
+  (async () => {
+    try {
+      // @ts-ignore
+      await import(`${base}/pagefind/pagefind-ui.js`);
+      // @ts-ignore
+      new window.PagefindUI({ element: '#search-mount-page', showSubResults: true, resetStyles: false });
+    } catch (e) {
+      const el = document.getElementById('search-mount-page');
+      if (el) el.innerHTML = '<p style="color:var(--ink-3);font-size:14px">Search index unavailable in dev. Run <code>npm run build</code> to generate it.</p>';
+    }
+  })();
+</script>
+
+<style>
+  .search-summary { font-style: italic; color: var(--ink-2); margin-bottom: var(--sp-5); }
+  h1 { font-size: var(--fs-h1); margin-block: var(--sp-3) var(--sp-3); }
+</style>

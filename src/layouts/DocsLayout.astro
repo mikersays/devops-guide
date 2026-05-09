@@ -1,0 +1,108 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Sidebar from '../components/Sidebar.astro';
+import Toc from '../components/Toc.astro';
+import CrossTrack from '../components/CrossTrack.astro';
+import EditionMark from '../components/EditionMark.astro';
+import PrevNext from '../components/PrevNext.astro';
+import ComplianceBanner from '../components/ComplianceBanner.astro';
+import { TRACKS, type TrackId } from '../lib/tracks';
+
+interface Heading { depth: number; slug: string; text: string; }
+
+interface SidebarSection { slug: string; href: string; title: string; order: number; }
+
+interface CrossTrackEntry {
+  track: TrackId;
+  href: string;
+  title: string;
+  exists: boolean;
+}
+
+interface Neighbor { href: string; title: string; numLabel: string; }
+
+interface Props {
+  track: TrackId;
+  sectionKey: string;     // e.g. '03-cicd'
+  title: string;
+  summary: string;
+  headings: Heading[];
+  sidebar: SidebarSection[];
+  crosstrack: CrossTrackEntry[];
+  prev: Neighbor | null;
+  next: Neighbor | null;
+}
+
+const {
+  track,
+  sectionKey,
+  title,
+  summary,
+  headings,
+  sidebar,
+  crosstrack,
+  prev,
+  next,
+} = Astro.props;
+
+const meta = TRACKS[track];
+const description = `${title} — ${summary} · ${meta.label} track of The DevOps Field Manual.`;
+---
+
+<BaseLayout title={title} description={description} track={track}>
+  <div class="container">
+    <div class="docs-grid">
+      <Sidebar track={track} sections={sidebar} currentSlug={sectionKey} />
+
+      <article class="prose docs-article" data-pagefind-body>
+        {track === 'enterprise' && <ComplianceBanner />}
+        <EditionMark track={track} sectionKey={sectionKey} />
+        <h1>{title}</h1>
+        <p class="lead">{summary}</p>
+
+        <div class="md-body">
+          <slot />
+        </div>
+
+        <PrevNext prev={prev} next={next} />
+      </article>
+
+      <aside class="aside-right" aria-label="In-page navigation">
+        <Toc headings={headings} />
+        <CrossTrack current={track} entries={crosstrack} />
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  .docs-article { max-width: var(--measure); padding-block: var(--sp-7) var(--sp-8); }
+  .docs-article h1 { font-size: var(--fs-h1); margin-top: var(--sp-3); margin-bottom: var(--sp-4); }
+  .docs-article .lead {
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+    color: var(--ink-2);
+    font-style: italic;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: var(--sp-5);
+    margin-bottom: var(--sp-6);
+    max-width: var(--measure);
+  }
+  /* Hide an H1 the markdown body might open with — our layout already renders the title H1. */
+  .docs-article .md-body > h1:first-child { display: none; }
+
+  /* The first paragraph after "Why it matters" gets the drop cap */
+  .docs-article h2#why-it-matters + p {
+    /* Drop-cap rule was defined in global.css under .lede; alias here */
+  }
+  .docs-article .md-body h2#why-it-matters + p::first-letter {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 3.4em;
+    line-height: 0.9;
+    float: left;
+    margin: 0.05em 0.14em 0 -0.04em;
+    color: var(--accent);
+    font-feature-settings: 'ss01';
+  }
+</style>

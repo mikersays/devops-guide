@@ -1,0 +1,24 @@
+---
+import { TRACKS, type TrackId, sectionDisplay } from '../lib/tracks';
+
+interface Props {
+  track: TrackId;
+  sectionKey: string;     // e.g. '03-cicd'
+  edition?: string;
+}
+
+const { track, sectionKey, edition = '1.0' } = Astro.props;
+const meta = TRACKS[track];
+const num = sectionKey.split('-')[0];
+const display = sectionDisplay(sectionKey);
+---
+
+<p class="edition-mark" role="doc-pageheader">
+  <span>Edition {edition}</span>
+  <span class="em-sep">·</span>
+  <span class="em-track">Track / {meta.short}</span>
+  <span class="em-sep">·</span>
+  <span>§ {num}</span>
+  <span class="em-sep">·</span>
+  <span>{display}</span>
+</p>

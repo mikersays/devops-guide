@@ -1,0 +1,27 @@
+---
+// Site-wide disclaimer for enterprise pages. Dismissible (localStorage).
+---
+
+<aside class="compliance-banner" id="compliance-banner" hidden>
+  <span class="stamp">Notice</span>
+  <span>
+    Compliance and control-mapping content on this site is illustrative.
+    Verify with a qualified subject-matter expert before relying on it for audit purposes.
+    Tooling claims describe support — not certification.
+  </span>
+  <button type="button" class="dismiss" id="dismiss-compliance" aria-label="Dismiss notice">×</button>
+</aside>
+
+<script is:inline>
+  (function () {
+    var banner = document.getElementById('compliance-banner');
+    var btn = document.getElementById('dismiss-compliance');
+    if (!banner || !btn) return;
+    var dismissed = localStorage.getItem('dofm:compliance-dismissed') === '1';
+    if (!dismissed) banner.removeAttribute('hidden');
+    btn.addEventListener('click', function () {
+      localStorage.setItem('dofm:compliance-dismissed', '1');
+      banner.setAttribute('hidden', '');
+    });
+  })();
+</script>

@@ -1,0 +1,81 @@
+---
+import { getCollection, render } from 'astro:content';
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { TRACK_ORDER, TRACKS, type TrackId, sectionDisplay } from '../../lib/tracks';
+
+export async function getStaticPaths() {
+  const all = await getCollection('tracks');
+  return all.map((entry) => {
+    const [track, section] = entry.id.split('/');
+    return {
+      params: { track, section },
+      props: { entry, allEntries: all },
+    };
+  });
+}
+
+const { entry, allEntries } = Astro.props;
+const track = entry.data.track as TrackId;
+const sectionKey = entry.id.split('/')[1];
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const { Content, headings } = await render(entry);
+
+// Sidebar: this track's 12 sections, in order
+const trackSections = allEntries
+  .filter((e) => e.data.track === track)
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((e) => {
+    const slug = e.id.split('/')[1];
+    return {
+      slug,
+      href: `${base}/${track}/${slug}/`,
+      title: e.data.title,
+      order: e.data.order,
+    };
+  });
+
+// Cross-track entries: same section number, in the other two tracks
+const crosstrack = TRACK_ORDER.filter((t) => t !== track).map((t) => {
+  const match = allEntries.find(
+    (e) => e.data.track === t && e.data.order === entry.data.order
+  );
+  if (match) {
+    const slug = match.id.split('/')[1];
+    return {
+      track: t,
+      href: `${base}/${t}/${slug}/`,
+      title: match.data.title,
+      exists: true,
+    };
+  }
+  return { track: t, href: '#', title: sectionDisplay(sectionKey), exists: false };
+});
+
+// Prev / Next within the same track
+const idx = trackSections.findIndex((s) => s.slug === sectionKey);
+const prev = idx > 0 ? {
+  href: trackSections[idx - 1].href,
+  title: trackSections[idx - 1].title,
+  numLabel: String(trackSections[idx - 1].order).padStart(2, '0'),
+} : null;
+const next = idx >= 0 && idx < trackSections.length - 1 ? {
+  href: trackSections[idx + 1].href,
+  title: trackSections[idx + 1].title,
+  numLabel: String(trackSections[idx + 1].order).padStart(2, '0'),
+} : null;
+---
+
+<DocsLayout
+  track={track}
+  sectionKey={sectionKey}
+  title={entry.data.title}
+  summary={entry.data.summary}
+  headings={headings}
+  sidebar={trackSections}
+  crosstrack={crosstrack}
+  prev={prev}
+  next={next}
+>
+  <Content />
+</DocsLayout>

@@ -1,0 +1,92 @@
+---
+import { getEntry, render } from 'astro:content';
+import PageLayout from '../layouts/PageLayout.astro';
+import { TRACKS, TRACK_ORDER } from '../lib/tracks';
+
+const entry = await getEntry('shared', 'choose-your-track');
+if (!entry) throw new Error('shared/choose-your-track entry not found');
+const { Content } = await render(entry);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<PageLayout title="Choose your track" description={entry.data.summary} variant="prose" eyebrow="Navigator">
+  <header slot="header" class="cyt-header">
+    <h1>{entry.data.title}</h1>
+    <p class="cyt-summary">{entry.data.summary}</p>
+  </header>
+
+  <div class="prose cyt-prose">
+    <Content />
+  </div>
+
+  <section class="cyt-tracks">
+    <p class="eyebrow">Or jump straight in</p>
+    <div class="cyt-cards">
+      {TRACK_ORDER.map((id) => {
+        const m = TRACKS[id];
+        return (
+          <a href={`${base}/${id}/`} class="cyt-card no-link" data-track={id}>
+            <span class="cyt-mark">{m.short}</span>
+            <span class="cyt-name">{m.label}</span>
+            <span class="cyt-arrow" aria-hidden="true">→</span>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .cyt-header { margin-bottom: var(--sp-6); padding-bottom: var(--sp-4); border-bottom: 1px solid var(--rule); }
+  .cyt-header h1 { font-size: var(--fs-h1); margin-block: var(--sp-3); }
+  .cyt-summary { font-size: var(--fs-lead); color: var(--ink-2); font-style: italic; }
+  .cyt-prose { max-width: var(--measure); }
+
+  .cyt-tracks { margin-top: var(--sp-8); padding-top: var(--sp-6); border-top: 1px solid var(--rule); }
+  .cyt-tracks .eyebrow { color: var(--ink-3); margin-bottom: var(--sp-4); display: inline-block; }
+  .cyt-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--rule);
+  }
+  .cyt-card {
+    display: grid;
+    grid-template-columns: 3.6rem 1fr 2rem;
+    gap: var(--sp-3);
+    align-items: center;
+    padding: var(--sp-4) var(--sp-4);
+    border-right: 1px solid var(--rule);
+    background: var(--paper);
+    transition: background 120ms ease;
+  }
+  .cyt-card:last-child { border-right: 0; }
+  .cyt-card:hover { background: var(--paper-2); }
+  .cyt-card[data-track='generic'] { --accent: var(--track-generic); }
+  .cyt-card[data-track='saas'] { --accent: var(--track-saas); }
+  .cyt-card[data-track='enterprise'] { --accent: var(--track-enterprise); }
+  .cyt-mark {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.18em;
+    color: var(--paper);
+    background: var(--accent);
+    padding: 0.18rem 0.45rem;
+    border-radius: var(--radius-sm);
+    text-align: center;
+  }
+  .cyt-name {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .cyt-arrow { font-family: var(--font-mono); color: var(--ink-3); transition: transform 160ms ease, color 120ms ease; text-align: right; }
+  .cyt-card:hover .cyt-arrow { transform: translateX(4px); color: var(--accent); }
+
+  @media (max-width: 700px) {
+    .cyt-cards { grid-template-columns: 1fr; }
+    .cyt-card { border-right: 0; border-bottom: 1px solid var(--rule); }
+    .cyt-card:last-child { border-bottom: 0; }
+  }
+</style>

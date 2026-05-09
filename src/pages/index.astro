@@ -1,0 +1,483 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { TRACKS, TRACK_ORDER } from '../lib/tracks';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const domains = [
+  { n: '00', t: 'Overview',          d: 'The operating model and what "done" looks like.' },
+  { n: '01', t: 'Team structure',    d: 'Squad shapes, platform vs product split, RACI.' },
+  { n: '02', t: 'Source control',    d: 'Branching, CODEOWNERS, branch protection, repo strategy.' },
+  { n: '03', t: 'CI / CD',           d: 'Pipelines, gates, environments, deploy strategies.' },
+  { n: '04', t: 'IaC',               d: 'Terraform / Pulumi layout, modules, state, drift control.' },
+  { n: '05', t: 'Cloud platform',    d: 'Landing zones, networking, accounts, identity.' },
+  { n: '06', t: 'Observability',     d: 'Metrics, logs, traces, SLOs, dashboards.' },
+  { n: '07', t: 'Incident response', d: 'Severities, on-call, runbooks, postmortems.' },
+  { n: '08', t: 'Security',          d: 'DevSecOps, SAST / DAST / SCA, secrets, supply chain.' },
+  { n: '09', t: 'Docs & knowledge',  d: 'ADRs, runbooks, internal portals.' },
+  { n: '10', t: 'Cost',              d: 'FinOps, showback, rightsizing, commitments.' },
+  { n: '11', t: 'Roadmap · 90 day',  d: 'Sequenced rollout for the first quarter.' },
+];
+
+const compare = [
+  { dim: 'Team size',          generic: '5–50 engineers',     saas: '20–200 engineers',          enterprise: '200+, multi-BU' },
+  { dim: 'Deploy cadence',     generic: 'Weekly to daily',    saas: 'Multiple per day',          enterprise: 'Change-managed windows' },
+  { dim: 'Compliance posture', generic: 'Light, internal',    saas: 'SOC 2, ISO 27001, GDPR',    enterprise: 'HIPAA, PCI, FedRAMP, SOX' },
+  { dim: 'Start with',         generic: 'Source control + CI/CD', saas: 'Platform + observability', enterprise: 'Landing zone + governance' },
+];
+---
+
+<BaseLayout title="The DevOps Field Manual" pageType="landing">
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container hero-inner">
+      <p class="eyebrow hero-eyebrow">Edition 1.0 · A working playbook</p>
+      <h1 class="hero-title">
+        The DevOps<br/>
+        <em>Field Manual</em>
+      </h1>
+      <p class="hero-lede">
+        A practical, opinionated guide to standing up a DevOps organization
+        inside a real business — from the first Git repo to a 200-engineer platform team.
+        Three tracks. Twelve domains. Ninety days.
+      </p>
+      <div class="hero-cta">
+        <a href={`${base}/choose-your-track/`} class="btn-primary">Choose your track</a>
+        <a href={`${base}/saas/00-overview/`} class="btn-secondary">Skim a sample &nbsp;→</a>
+      </div>
+      <dl class="hero-stats">
+        <div><dt>Tracks</dt><dd>03</dd></div>
+        <div><dt>Domains</dt><dd>12</dd></div>
+        <div><dt>Sections</dt><dd>36</dd></div>
+        <div><dt>Pages</dt><dd>41</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="container section-tracks">
+    <header class="sect-head">
+      <p class="eyebrow">§ I &nbsp; The three tracks</p>
+      <h2 class="sect-h">Same twelve domains. Three different answers.</h2>
+      <p class="sect-sub">
+        The right operating model depends on your business. Pick one and stay in it —
+        cross-reference only when you have a specific reason to.
+      </p>
+    </header>
+
+    <div class="track-cards">
+      {TRACK_ORDER.map((id) => {
+        const m = TRACKS[id];
+        return (
+          <a href={`${base}/${id}/`} class="track-card no-link" data-track={id}>
+            <div class="tc-head">
+              <span class="tc-mark">{m.short}</span>
+              <span class="tc-num">0{TRACK_ORDER.indexOf(id) + 1}</span>
+            </div>
+            <h3 class="tc-title">{m.label}</h3>
+            <p class="tc-tagline">{m.tagline}.</p>
+            <p class="tc-audience">{m.audience}</p>
+            <span class="tc-cta">Open track &nbsp;→</span>
+          </a>
+        );
+      })}
+    </div>
+
+    <div class="compare-wrap">
+      <p class="eyebrow compare-eyebrow">At a glance</p>
+      <table class="compare">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Generic</th>
+            <th>SaaS</th>
+            <th>Enterprise</th>
+          </tr>
+        </thead>
+        <tbody>
+          {compare.map((row) => (
+            <tr>
+              <th scope="row">{row.dim}</th>
+              <td>{row.generic}</td>
+              <td>{row.saas}</td>
+              <td>{row.enterprise}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="container section-domains">
+    <header class="sect-head">
+      <p class="eyebrow">§ II &nbsp; The twelve domains</p>
+      <h2 class="sect-h">A complete operating model, one domain at a time.</h2>
+      <p class="sect-sub">
+        Every track walks these twelve domains in the same order. They build on each other —
+        source control before CI/CD, platform before observability targets.
+      </p>
+    </header>
+    <ol class="domain-grid">
+      {domains.map((d) => (
+        <li>
+          <span class="dg-num">{d.n}</span>
+          <h3 class="dg-title">{d.t}</h3>
+          <p class="dg-summary">{d.d}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="container section-howto">
+    <header class="sect-head">
+      <p class="eyebrow">§ III &nbsp; How to use the manual</p>
+      <h2 class="sect-h">Three steps, in order.</h2>
+    </header>
+    <ol class="howto-list">
+      <li>
+        <span class="howto-n">i.</span>
+        <div>
+          <h4>Pick your track.</h4>
+          <p>If you're unsure, work through <a href={`${base}/choose-your-track/`}>Choose your track</a>. Don't try to merge tracks — they're internally consistent and the gaps will bite you.</p>
+        </div>
+      </li>
+      <li>
+        <span class="howto-n">ii.</span>
+        <div>
+          <h4>Walk the twelve domains in order.</h4>
+          <p>They build on each other. Source control before CI/CD. CI/CD before IaC rollout. Platform before observability targets. Resist the urge to start with what's interesting.</p>
+        </div>
+      </li>
+      <li>
+        <span class="howto-n">iii.</span>
+        <div>
+          <h4>Adapt the 90-day rollout.</h4>
+          <p>The plan at the end of each track is a default sequence, not a contract. Reorder it to fit your constraints — but keep the dependencies between domains intact.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="container closing">
+    <div class="closing-rule" aria-hidden="true"></div>
+    <p class="eyebrow">Begin</p>
+    <p class="closing-line">Ready? Pick a track and walk the first domain.</p>
+    <div class="closing-cta">
+      <a href={`${base}/choose-your-track/`} class="btn-primary">Choose your track</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* --- Hero ------------------------------------------------------------- */
+  .hero { position: relative; padding-block: var(--sp-9) var(--sp-9); overflow: hidden; }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 30% 0%, var(--accent-soft), transparent 65%),
+      repeating-linear-gradient(0deg, transparent 0 31px, var(--rule-soft) 31px 32px),
+      repeating-linear-gradient(90deg, transparent 0 31px, var(--rule-soft) 31px 32px);
+    opacity: 0.7;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse 80% 100% at 50% 30%, black, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 100% at 50% 30%, black, transparent 75%);
+  }
+  .hero-inner { position: relative; }
+  .hero-eyebrow { color: var(--accent); margin-bottom: var(--sp-5); display: inline-block; }
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 9vw, 6.5rem);
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+    font-weight: 500;
+    text-wrap: balance;
+    max-width: 16ch;
+    margin-bottom: var(--sp-5);
+  }
+  .hero-title em { font-style: italic; color: var(--accent); }
+  .hero-lede {
+    max-width: 50ch;
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+    color: var(--ink-2);
+    margin-bottom: var(--sp-6);
+  }
+  .hero-cta { display: flex; gap: var(--sp-3); flex-wrap: wrap; align-items: center; }
+  .btn-primary {
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.85rem 1.4rem;
+    font-family: var(--font-body);
+    font-size: var(--fs-meta);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    border-radius: var(--radius-sm);
+    transition: background 120ms ease, color 120ms ease;
+  }
+  .btn-primary:hover { background: var(--accent); border-color: var(--accent); color: var(--paper); }
+  .btn-secondary {
+    border: 1px solid var(--rule);
+    color: var(--ink);
+    padding: 0.8rem 1.2rem;
+    font-family: var(--font-body);
+    font-size: var(--fs-meta);
+    border-radius: var(--radius-sm);
+  }
+  .btn-secondary:hover { border-color: var(--ink); }
+
+  .hero-stats {
+    display: flex;
+    gap: var(--sp-7);
+    margin-top: var(--sp-8);
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .hero-stats > div { display: flex; flex-direction: column; }
+  .hero-stats dt {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .hero-stats dd {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    margin: 0.2rem 0 0;
+    color: var(--ink);
+    font-feature-settings: 'tnum';
+    line-height: 1;
+  }
+
+  /* --- Section heads ---------------------------------------------------- */
+  .sect-head { max-width: 60ch; margin-bottom: var(--sp-7); }
+  .sect-head .eyebrow { color: var(--ink-3); margin-bottom: var(--sp-3); display: inline-block; }
+  .sect-h {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+    margin-bottom: var(--sp-3);
+    text-wrap: balance;
+  }
+  .sect-sub { font-size: var(--fs-lead); color: var(--ink-2); line-height: 1.55; }
+
+  .section-tracks, .section-domains, .section-howto, .closing {
+    padding-block: var(--sp-9);
+  }
+  .section-tracks { border-top: 1px solid var(--rule); }
+  .section-domains { border-top: 1px solid var(--rule); background: var(--paper-2); padding-inline: 0; }
+  .section-domains .container { padding-inline: var(--sp-6); }
+  .section-domains > .container > .sect-head { padding-inline: 0; }
+  .section-howto { border-top: 1px solid var(--rule); }
+
+  /* --- Track cards ------------------------------------------------------ */
+  .track-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin-bottom: var(--sp-8);
+    border: 1px solid var(--rule);
+    background: var(--paper);
+  }
+  .track-card {
+    padding: var(--sp-5) var(--sp-5) var(--sp-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    border-right: 1px solid var(--rule);
+    transition: background 120ms ease;
+    color: var(--ink);
+  }
+  .track-card:last-child { border-right: 0; }
+  .track-card:hover { background: var(--paper-2); }
+  .track-card .tc-head { display: flex; justify-content: space-between; align-items: baseline; }
+  .track-card .tc-mark {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.18em;
+    color: var(--paper);
+    background: var(--accent);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-sm);
+  }
+  .track-card .tc-num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    color: var(--ink-3);
+    letter-spacing: 0.16em;
+  }
+  .track-card .tc-title {
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    line-height: 1.1;
+    font-weight: 500;
+    margin-top: var(--sp-3);
+  }
+  .track-card .tc-tagline { font-size: var(--fs-meta); color: var(--ink-2); line-height: 1.45; font-style: italic; }
+  .track-card .tc-audience {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    margin-top: auto;
+    padding-top: var(--sp-4);
+  }
+  .track-card .tc-cta {
+    margin-top: var(--sp-3);
+    font-family: var(--font-body);
+    font-size: var(--fs-meta);
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .track-card[data-track='generic']    { --accent: var(--track-generic); --accent-soft: var(--track-generic-soft); }
+  .track-card[data-track='saas']       { --accent: var(--track-saas);    --accent-soft: var(--track-saas-soft); }
+  .track-card[data-track='enterprise'] { --accent: var(--track-enterprise); --accent-soft: var(--track-enterprise-soft); }
+
+  @media (max-width: 900px) {
+    .track-cards { grid-template-columns: 1fr; }
+    .track-card { border-right: 0; border-bottom: 1px solid var(--rule); }
+    .track-card:last-child { border-bottom: 0; }
+  }
+
+  /* --- Compare table ---------------------------------------------------- */
+  .compare-wrap { margin-top: var(--sp-7); }
+  .compare-eyebrow { color: var(--ink-3); margin-bottom: var(--sp-3); display: inline-block; }
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-meta);
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+  }
+  .compare th, .compare td {
+    text-align: left;
+    padding: 0.85rem 1rem 0.85rem 0;
+    vertical-align: top;
+    border-bottom: 1px solid var(--rule);
+  }
+  .compare thead th {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--ink);
+    font-weight: 500;
+  }
+  .compare tbody th {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+    width: 14rem;
+  }
+  .compare tbody td { color: var(--ink); }
+  @media (max-width: 700px) {
+    .compare tbody th { width: 9rem; font-size: 0.65rem; }
+    .compare th, .compare td { padding-right: 0.5rem; }
+  }
+
+  /* --- Domains grid ----------------------------------------------------- */
+  .domain-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+  }
+  .domain-grid > li {
+    padding: var(--sp-5);
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper);
+    transition: background 120ms ease;
+  }
+  .domain-grid > li:nth-child(3n) { border-right: 0; }
+  .domain-grid > li:nth-last-child(-n+3) { border-bottom: 0; }
+  .domain-grid > li:hover { background: var(--paper-2); }
+  .dg-num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    color: var(--accent);
+    letter-spacing: 0.16em;
+  }
+  .dg-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    line-height: 1.2;
+    font-weight: 500;
+    margin: 0.5rem 0 0.4rem;
+  }
+  .dg-summary { font-size: var(--fs-meta); line-height: 1.5; color: var(--ink-2); }
+
+  @media (max-width: 900px) {
+    .domain-grid { grid-template-columns: repeat(2, 1fr); }
+    .domain-grid > li:nth-child(3n) { border-right: 1px solid var(--rule); }
+    .domain-grid > li:nth-child(2n) { border-right: 0; }
+    .domain-grid > li:nth-last-child(-n+3) { border-bottom: 1px solid var(--rule); }
+    .domain-grid > li:nth-last-child(-n+2) { border-bottom: 0; }
+  }
+  @media (max-width: 600px) {
+    .domain-grid { grid-template-columns: 1fr; }
+    .domain-grid > li { border-right: 0 !important; }
+  }
+
+  /* --- How-to list ------------------------------------------------------ */
+  .howto-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-5);
+    max-width: var(--measure);
+    margin-left: 0;
+  }
+  .howto-list > li {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: var(--sp-3);
+    align-items: baseline;
+    padding-bottom: var(--sp-5);
+    border-bottom: 1px solid var(--rule);
+  }
+  .howto-list > li:last-child { border-bottom: 0; }
+  .howto-n {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.6rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .howto-list h4 {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 500;
+    line-height: 1.2;
+    margin-bottom: 0.4rem;
+  }
+  .howto-list p { font-size: var(--fs-meta); line-height: 1.6; color: var(--ink-2); }
+
+  /* --- Closing ---------------------------------------------------------- */
+  .closing { text-align: center; padding-block: var(--sp-9); border-top: 1px solid var(--rule); }
+  .closing-rule { width: 4rem; height: 1px; background: var(--accent); margin: 0 auto var(--sp-5); }
+  .closing .eyebrow { color: var(--ink-3); margin-bottom: var(--sp-3); }
+  .closing-line {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    line-height: 1.2;
+    font-style: italic;
+    color: var(--ink);
+    max-width: 26ch;
+    margin: 0 auto var(--sp-5);
+    text-wrap: balance;
+  }
+</style>

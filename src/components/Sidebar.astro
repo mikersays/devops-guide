@@ -1,0 +1,47 @@
+---
+import { TRACKS, type TrackId } from '../lib/tracks';
+
+interface SidebarSection {
+  slug: string;        // section file slug, e.g. '03-cicd'
+  href: string;        // full URL
+  title: string;
+  order: number;
+}
+
+interface Props {
+  track: TrackId;
+  sections: SidebarSection[];
+  currentSlug: string;
+}
+
+const { track, sections, currentSlug } = Astro.props;
+const meta = TRACKS[track];
+const currentIdx = sections.findIndex((s) => s.slug === currentSlug);
+const progress = currentIdx >= 0 ? Math.round(((currentIdx + 1) / sections.length) * 100) : 0;
+---
+
+<aside class="sidebar" aria-label={`${meta.label} track navigation`}>
+  <div class="sidebar-track-label">
+    <span class="track-dot" style={`background:${meta.accent}`}></span>
+    <span>{meta.short} · {meta.label}</span>
+  </div>
+  <ol class="sidebar-section-list">
+    {sections.map((s) => (
+      <li>
+        <a
+          href={s.href}
+          aria-current={s.slug === currentSlug ? 'page' : undefined}
+        >
+          <span class="num">{String(s.order).padStart(2, '0')}</span>
+          <span>{s.title}</span>
+        </a>
+      </li>
+    ))}
+  </ol>
+  {currentIdx >= 0 && (
+    <div class="sidebar-progress">
+      <span>Progress &nbsp;{currentIdx + 1} / {sections.length}</span>
+      <div class="bar"><span style={`width:${progress}%`}></span></div>
+    </div>
+  )}
+</aside>

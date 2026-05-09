@@ -1,0 +1,29 @@
+---
+interface Neighbor {
+  href: string;
+  title: string;
+  numLabel: string;
+}
+
+interface Props {
+  prev?: Neighbor | null;
+  next?: Neighbor | null;
+}
+
+const { prev = null, next = null } = Astro.props;
+---
+
+<nav class="prevnext" aria-label="Section navigation">
+  {prev ? (
+    <a href={prev.href} class="pn-prev no-link">
+      <span class="pn-label">← Previous · §{prev.numLabel}</span>
+      <span class="pn-title">{prev.title}</span>
+    </a>
+  ) : <span></span>}
+  {next ? (
+    <a href={next.href} class="pn-next no-link">
+      <span class="pn-label">Next · §{next.numLabel} →</span>
+      <span class="pn-title">{next.title}</span>
+    </a>
+  ) : <span></span>}
+</nav>

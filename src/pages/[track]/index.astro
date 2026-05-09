@@ -1,0 +1,154 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { TRACKS, TRACK_ORDER, type TrackId } from '../../lib/tracks';
+
+export async function getStaticPaths() {
+  return TRACK_ORDER.map((track) => ({ params: { track } }));
+}
+
+const { track } = Astro.params as { track: TrackId };
+const meta = TRACKS[track];
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const all = await getCollection('tracks');
+const sections = all
+  .filter((e) => e.data.track === track)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title={`${meta.label} track`}
+  description={`${meta.tagline} — the ${meta.label} track of The DevOps Field Manual.`}
+  track={track}
+>
+  <section class="track-hero">
+    <div class="container">
+      <p class="eyebrow">Track / {meta.short}</p>
+      <h1 class="track-hero-title">
+        {meta.label}.
+        <span class="muted">{meta.tagline}.</span>
+      </h1>
+      <p class="track-hero-meta">
+        <span class="track-dot" style={`background:${meta.accent}`}></span>
+        <span>{meta.audience}</span>
+      </p>
+    </div>
+  </section>
+
+  <section class="container track-toc">
+    <p class="eyebrow">The 12 domains</p>
+    <ol class="track-toc-list">
+      {sections.map((s) => {
+        const slug = s.id.split('/')[1];
+        return (
+          <li>
+            <a href={`${base}/${track}/${slug}/`} class="no-link">
+              <span class="num">{String(s.data.order).padStart(2, '0')}</span>
+              <span class="body">
+                <span class="title">{s.data.title}</span>
+                <span class="summary">{s.data.summary}</span>
+              </span>
+              <span class="chevron" aria-hidden="true">→</span>
+            </a>
+          </li>
+        );
+      })}
+    </ol>
+  </section>
+</BaseLayout>
+
+<style>
+  .track-hero {
+    padding: var(--sp-9) 0 var(--sp-7);
+    border-bottom: 1px solid var(--rule);
+    background:
+      linear-gradient(to bottom, var(--paper), var(--paper)),
+      repeating-linear-gradient(0deg, transparent 0 23px, var(--rule-soft) 23px 24px);
+    background-blend-mode: multiply;
+  }
+  .track-hero .eyebrow { color: var(--accent); }
+  .track-hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 4.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    max-width: 26ch;
+    margin-top: var(--sp-3);
+    text-wrap: balance;
+  }
+  .track-hero-title .muted { color: var(--ink-3); font-style: italic; }
+  .track-hero-meta {
+    margin-top: var(--sp-5);
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--ink-2);
+  }
+  .track-hero-meta .track-dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+  }
+
+  .track-toc { padding: var(--sp-8) var(--sp-6) var(--sp-9); }
+  .track-toc .eyebrow { color: var(--ink-3); margin-bottom: var(--sp-5); display: inline-block; }
+  .track-toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .track-toc-list > li {
+    border-bottom: 1px solid var(--rule);
+  }
+  .track-toc-list > li > a {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr) 2rem;
+    gap: var(--sp-4);
+    align-items: baseline;
+    padding: var(--sp-5) var(--sp-3);
+    border: 0;
+    transition: background 120ms ease;
+  }
+  .track-toc-list > li > a:hover { background: var(--paper-2); }
+  .track-toc-list > li > a:hover .chevron { transform: translateX(4px); color: var(--accent); }
+  .track-toc-list .num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+  .track-toc-list .body { display: flex; flex-direction: column; gap: 0.35rem; }
+  .track-toc-list .title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 500;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  .track-toc-list .summary {
+    font-size: var(--fs-meta);
+    color: var(--ink-2);
+    line-height: 1.5;
+    max-width: 56ch;
+  }
+  .track-toc-list .chevron {
+    font-family: var(--font-mono);
+    color: var(--ink-3);
+    transition: transform 160ms ease, color 120ms ease;
+    align-self: center;
+    text-align: right;
+  }
+
+  @media (max-width: 700px) {
+    .track-toc-list > li > a {
+      grid-template-columns: 2.5rem minmax(0, 1fr) 1.5rem;
+      padding: var(--sp-4) var(--sp-2);
+    }
+    .track-toc-list .title { font-size: 1.2rem; }
+  }
+</style>

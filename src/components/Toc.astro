@@ -1,0 +1,51 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+const tocHeadings = headings.filter((h) => h.depth === 2);
+---
+
+{tocHeadings.length > 0 && (
+  <nav class="toc" aria-label="In this section">
+    <p class="toc-label">In this section</p>
+    <ul class="toc-list">
+      {tocHeadings.map((h) => (
+        <li><a href={`#${h.slug}`} data-toc-anchor={h.slug}>{h.text}</a></li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<script>
+  // Highlight the active heading in the TOC as the user scrolls.
+  const links = document.querySelectorAll<HTMLAnchorElement>('.toc-list a');
+  if (links.length > 0) {
+    const map = new Map<string, HTMLAnchorElement>();
+    links.forEach((a) => {
+      const slug = a.getAttribute('data-toc-anchor');
+      if (slug) map.set(slug, a);
+    });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = entry.target.id;
+          const a = map.get(id);
+          if (!a) return;
+          if (entry.isIntersecting) {
+            links.forEach((l) => l.classList.remove('active'));
+            a.classList.add('active');
+          }
+        });
+      },
+      { rootMargin: '-30% 0px -55% 0px', threshold: 0 }
+    );
+    map.forEach((_, slug) => {
+      const target = document.getElementById(slug);
+      if (target) observer.observe(target);
+    });
+  }
+</script>

@@ -1,0 +1,180 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { type TrackId } from '../lib/tracks';
+
+interface Props {
+  title: string;
+  description?: string;
+  track?: TrackId | null;
+  pageType?: 'landing' | 'docs' | 'reference';
+}
+
+const {
+  title,
+  description = 'A practical playbook for standing up DevOps inside your business.',
+  track = null,
+  pageType = 'docs',
+} = Astro.props;
+
+const siteTitle = title === 'The DevOps Field Manual' ? title : `${title} · The DevOps Field Manual`;
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en" data-page-type={pageType}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>{siteTitle}</title>
+
+    {/* Theme bootstrap — set theme before paint to prevent flash */}
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('dofm:theme');
+          var sys = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          var theme = stored === 'dark' || stored === 'light' ? stored : sys;
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body data-track={track ?? undefined}>
+    <a href="#main" class="visually-hidden">Skip to content</a>
+    <Nav currentTrack={track} currentPath={currentPath} />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer />
+
+    {/* Search modal — Pagefind UI mounts on open */}
+    <div class="search-modal" id="search-modal" hidden>
+      <div class="search-backdrop" data-close="true"></div>
+      <div class="search-panel">
+        <button type="button" class="close-btn" data-close="true" aria-label="Close search">×</button>
+        <div id="search-mount" class="pagefind-ui-mount"></div>
+      </div>
+    </div>
+
+    {/* Mobile drawer */}
+    <div class="mobile-drawer" id="mobile-drawer">
+      <div class="panel">
+        <button type="button" class="close-btn" id="close-drawer" aria-label="Close menu">close ×</button>
+        <slot name="drawer" />
+      </div>
+    </div>
+
+    <style is:global>
+      .search-modal { position: fixed; inset: 0; z-index: 70; display: flex; align-items: flex-start; justify-content: center; padding-top: 8vh; }
+      .search-modal[hidden] { display: none; }
+      .search-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
+      .search-panel { position: relative; width: 100%; max-width: 38rem; margin: 0 1rem; background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 2rem 1.5rem 1.5rem; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.4); }
+      .search-panel .close-btn { position: absolute; top: 0.5rem; right: 0.7rem; font-family: var(--font-mono); font-size: 1.1rem; color: var(--ink-3); }
+      .pagefind-ui-mount input { font: inherit; }
+      kbd.shortcut { font-family: var(--font-mono); font-size: 0.72em; border: 1px solid var(--rule); padding: 0.05em 0.4em; border-radius: 3px; color: var(--ink-3); margin-left: 0.4rem; }
+    </style>
+
+    {/* Global behaviour: theme toggle, search modal, mobile drawer, checklist persistence */}
+    <script>
+      // Theme toggle
+      const themeBtn = document.getElementById('theme-toggle');
+      const lightIcon = document.querySelector<HTMLElement>('.theme-icon-light');
+      const darkIcon = document.querySelector<HTMLElement>('.theme-icon-dark');
+      const syncThemeIcons = () => {
+        const t = document.documentElement.getAttribute('data-theme');
+        if (lightIcon && darkIcon) {
+          lightIcon.style.display = t === 'dark' ? 'none' : '';
+          darkIcon.style.display = t === 'dark' ? '' : 'none';
+        }
+      };
+      syncThemeIcons();
+      themeBtn?.addEventListener('click', () => {
+        const cur = document.documentElement.getAttribute('data-theme');
+        const next = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('dofm:theme', next); } catch (e) {}
+        syncThemeIcons();
+      });
+
+      // Search modal
+      const searchModal = document.getElementById('search-modal');
+      const searchOpen = document.getElementById('open-search');
+      const searchMount = document.getElementById('search-mount');
+      let pagefindLoaded = false;
+      const openSearch = async () => {
+        if (!searchModal) return;
+        searchModal.removeAttribute('hidden');
+        if (!pagefindLoaded && searchMount) {
+          pagefindLoaded = true;
+          try {
+            const pagefindBundlePath = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/pagefind/pagefind-ui.js`;
+            // @ts-ignore — dynamic script load
+            await import(/* @vite-ignore */ pagefindBundlePath);
+            // @ts-ignore — global from pagefind
+            new window.PagefindUI({ element: '#search-mount', showSubResults: true, resetStyles: false });
+          } catch (e) {
+            searchMount.innerHTML = '<p style="color:var(--ink-3);font-size:14px">Search index unavailable in dev. Run <code>npm run build</code> to generate it.</p>';
+          }
+        }
+        const input = searchModal.querySelector<HTMLInputElement>('input');
+        setTimeout(() => input?.focus(), 50);
+      };
+      const closeSearch = () => searchModal?.setAttribute('hidden', '');
+      searchOpen?.addEventListener('click', openSearch);
+      searchModal?.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).dataset.close === 'true') closeSearch();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          openSearch();
+        }
+        if (e.key === 'Escape') closeSearch();
+      });
+
+      // Mobile drawer
+      const drawer = document.getElementById('mobile-drawer');
+      const drawerOpen = document.getElementById('menu-toggle');
+      const drawerClose = document.getElementById('close-drawer');
+      drawerOpen?.addEventListener('click', () => drawer?.setAttribute('data-open', 'true'));
+      drawerClose?.addEventListener('click', () => drawer?.removeAttribute('data-open'));
+      drawer?.addEventListener('click', (e) => {
+        if (e.target === drawer) drawer.removeAttribute('data-open');
+      });
+
+      // Quick-checklist persistence
+      const lists = document.querySelectorAll<HTMLElement>('.quick-checklist');
+      lists.forEach((list, listIdx) => {
+        const path = location.pathname;
+        const checks = list.querySelectorAll<HTMLInputElement>('input[type="checkbox"]');
+        checks.forEach((cb, i) => {
+          const key = `dofm:check:${path}:${listIdx}:${i}`;
+          if (localStorage.getItem(key) === '1') cb.checked = true;
+          cb.disabled = false; // markdown task lists default to disabled
+          cb.addEventListener('change', () => {
+            try { localStorage.setItem(key, cb.checked ? '1' : '0'); } catch (e) {}
+          });
+        });
+        const reset = document.createElement('button');
+        reset.type = 'button';
+        reset.className = 'quick-checklist-reset';
+        reset.textContent = 'Reset · all unchecked';
+        reset.addEventListener('click', () => {
+          checks.forEach((cb, i) => {
+            cb.checked = false;
+            try { localStorage.removeItem(`dofm:check:${path}:${listIdx}:${i}`); } catch (e) {}
+          });
+        });
+        list.parentElement?.insertBefore(reset, list.nextSibling);
+      });
+    </script>
+  </body>
+</html>

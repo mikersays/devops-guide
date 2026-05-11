@@ -73,6 +73,40 @@ const description = `${title} — ${summary} · ${meta.label} track of The DevOp
       </aside>
     </div>
   </div>
+
+  {/* Drawer extras specific to docs pages — track outline + on-page TOC */}
+  <Fragment slot="drawer">
+    <nav class="drawer-section" aria-label={`${meta.label} track contents`}>
+      <p class="drawer-eyebrow">
+        <span class="dt-mark drawer-track-mark" data-track={track}>{meta.short}</span>
+        {meta.label} contents
+      </p>
+      <ol class="drawer-sections">
+        {sidebar.map((s) => (
+          <li>
+            <a
+              href={s.href}
+              aria-current={s.slug === sectionKey ? 'page' : undefined}
+            >
+              <span class="ds-num">{String(s.order).padStart(2, '0')}</span>
+              <span class="ds-title">{s.title}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    {headings.filter((h) => h.depth === 2).length > 0 && (
+      <nav class="drawer-section" aria-label="On this page">
+        <p class="drawer-eyebrow">On this page</p>
+        <ul class="drawer-toc">
+          {headings.filter((h) => h.depth === 2).map((h) => (
+            <li><a href={`#${h.slug}`}>{h.text}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )}
+  </Fragment>
 </BaseLayout>
 
 <style is:global>

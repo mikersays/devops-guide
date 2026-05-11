@@ -480,4 +480,92 @@ const compare = [
     margin: 0 auto var(--sp-5);
     text-wrap: balance;
   }
+
+  /* --- Mobile refinements for landing ----------------------------------- */
+  @media (max-width: 760px) {
+    .hero { padding-block: var(--sp-7) var(--sp-7); }
+    .hero-title { margin-bottom: var(--sp-4); max-width: 14ch; }
+    .hero-lede { font-size: 1.025rem; line-height: 1.5; margin-bottom: var(--sp-5); }
+    .hero-cta { gap: var(--sp-2); width: 100%; }
+    .hero-cta .btn-primary,
+    .hero-cta .btn-secondary {
+      flex: 1 1 14rem;
+      text-align: center;
+      padding: 0.85rem 1.1rem;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--sp-4);
+      margin-top: var(--sp-6);
+      padding-top: var(--sp-4);
+    }
+    .hero-stats dd { font-size: 1.6rem; }
+    .hero-stats dt { font-size: 0.6rem; letter-spacing: 0.14em; }
+
+    .section-tracks, .section-domains, .section-howto, .closing { padding-block: var(--sp-7); }
+    .sect-head { margin-bottom: var(--sp-5); }
+    .sect-sub { font-size: 1rem; }
+
+    .section-domains .container { padding-inline: 1.05rem; }
+
+    /* Stack the compare table so each row reads as a card */
+    .compare-wrap { margin-top: var(--sp-5); }
+    .compare,
+    .compare thead,
+    .compare tbody,
+    .compare tr,
+    .compare th,
+    .compare td { display: block; width: 100%; }
+    .compare { border-top-width: 1px; border-bottom-width: 1px; }
+    .compare thead { display: none; }
+    .compare tbody tr {
+      padding: var(--sp-3) 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .compare tbody tr:last-child { border-bottom: 0; }
+    .compare tbody th[scope='row'] {
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: 1.05rem;
+      letter-spacing: -0.005em;
+      text-transform: none;
+      color: var(--ink);
+      width: auto;
+      padding: 0 0 0.5rem;
+      border: 0;
+    }
+    .compare tbody td {
+      padding: 0.25rem 0 0.25rem 6.5rem;
+      position: relative;
+      font-size: 0.92rem;
+      color: var(--ink-2);
+      border: 0;
+    }
+    .compare tbody td::before {
+      position: absolute;
+      left: 0;
+      top: 0.32rem;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      color: var(--ink-3);
+      text-transform: uppercase;
+    }
+    .compare tbody td:nth-of-type(1)::before { content: 'Generic'; color: var(--track-generic); }
+    .compare tbody td:nth-of-type(2)::before { content: 'SaaS';    color: var(--track-saas); }
+    .compare tbody td:nth-of-type(3)::before { content: 'Enterprise'; color: var(--track-enterprise); }
+
+    /* Howto list */
+    .howto-list > li { grid-template-columns: 2.4rem 1fr; gap: var(--sp-2); padding-bottom: var(--sp-4); }
+    .howto-n { font-size: 1.35rem; }
+    .howto-list h4 { font-size: 1.05rem; }
+
+    /* Closing block tighter */
+    .closing { padding-block: var(--sp-7); }
+  }
+
+  @media (max-width: 420px) {
+    .hero-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3) var(--sp-4); }
+  }
 </style>

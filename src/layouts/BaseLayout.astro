@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import { type TrackId } from '../lib/tracks';
+import { TRACKS, TRACK_ORDER, type TrackId } from '../lib/tracks';
 
 interface Props {
   title: string;
@@ -20,6 +20,7 @@ const {
 
 const siteTitle = title === 'The DevOps Field Manual' ? title : `${title} · The DevOps Field Manual`;
 const currentPath = Astro.url.pathname;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <!doctype html>
@@ -64,12 +65,74 @@ const currentPath = Astro.url.pathname;
       </div>
     </div>
 
-    {/* Mobile drawer */}
-    <div class="mobile-drawer" id="mobile-drawer">
-      <div class="panel">
-        <button type="button" class="close-btn" id="close-drawer" aria-label="Close menu">close ×</button>
+    {/* Mobile drawer — full navigation surface for narrow viewports */}
+    <div class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
+      <div class="drawer-backdrop" data-close-drawer></div>
+      <aside class="panel" role="dialog" aria-label="Site menu" aria-modal="true" tabindex="-1">
+        <header class="drawer-head">
+          <span class="drawer-brand">
+            <span class="brand-mark">DOFM</span>
+            <span>Field Manual</span>
+          </span>
+          <button type="button" class="drawer-close" id="close-drawer" aria-label="Close menu" data-close-drawer>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <line x1="3" y1="3" x2="13" y2="13"/>
+              <line x1="13" y1="3" x2="3" y2="13"/>
+            </svg>
+          </button>
+        </header>
+
+        <nav class="drawer-section drawer-tracks-section" aria-label="Tracks">
+          <p class="drawer-eyebrow">The three tracks</p>
+          <ul class="drawer-tracks">
+            {TRACK_ORDER.map((id) => (
+              <li>
+                <a
+                  href={`${base}/${id}/`}
+                  data-track={id}
+                  aria-current={track === id ? 'true' : undefined}
+                >
+                  <span class="dt-dot" style={`background:${TRACKS[id].accent}`} aria-hidden="true"></span>
+                  <span class="dt-body">
+                    <span class="dt-label">{TRACKS[id].label}</span>
+                    <span class="dt-tagline">{TRACKS[id].tagline}</span>
+                  </span>
+                  <span class="dt-mark">{TRACKS[id].short}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
         <slot name="drawer" />
-      </div>
+
+        <nav class="drawer-section" aria-label="References">
+          <p class="drawer-eyebrow">References</p>
+          <ul class="drawer-links">
+            <li><a href={`${base}/glossary/`}>Glossary</a></li>
+            <li><a href={`${base}/maturity/`}>Maturity model</a></li>
+            <li><a href={`${base}/choose-your-track/`}>Choose your track</a></li>
+            <li><a href={`${base}/contributing/`}>Contributing</a></li>
+          </ul>
+        </nav>
+
+        <footer class="drawer-foot">
+          <button type="button" class="drawer-action" id="drawer-search" aria-label="Search the manual">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <circle cx="7" cy="7" r="5" />
+              <line x1="11" y1="11" x2="14" y2="14" />
+            </svg>
+            <span>Search</span>
+            <kbd>/</kbd>
+          </button>
+          <a class="drawer-action" href="https://github.com/" rel="me" aria-label="GitHub repository">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            <span>GitHub</span>
+          </a>
+        </footer>
+      </aside>
     </div>
 
     <style is:global>
@@ -140,14 +203,42 @@ const currentPath = Astro.url.pathname;
         if (e.key === 'Escape') closeSearch();
       });
 
-      // Mobile drawer
+      // Mobile drawer — open/close with body scroll lock and focus restoration
       const drawer = document.getElementById('mobile-drawer');
       const drawerOpen = document.getElementById('menu-toggle');
-      const drawerClose = document.getElementById('close-drawer');
-      drawerOpen?.addEventListener('click', () => drawer?.setAttribute('data-open', 'true'));
-      drawerClose?.addEventListener('click', () => drawer?.removeAttribute('data-open'));
+      const drawerPanel = drawer?.querySelector<HTMLElement>('.panel');
+      let drawerReturnFocus: HTMLElement | null = null;
+      const openDrawer = () => {
+        if (!drawer) return;
+        drawerReturnFocus = (document.activeElement as HTMLElement) ?? null;
+        drawer.setAttribute('data-open', 'true');
+        drawer.setAttribute('aria-hidden', 'false');
+        drawerOpen?.setAttribute('aria-expanded', 'true');
+        document.documentElement.classList.add('drawer-locked');
+        setTimeout(() => drawerPanel?.focus({ preventScroll: true }), 50);
+      };
+      const closeDrawer = () => {
+        if (!drawer) return;
+        drawer.removeAttribute('data-open');
+        drawer.setAttribute('aria-hidden', 'true');
+        drawerOpen?.setAttribute('aria-expanded', 'false');
+        document.documentElement.classList.remove('drawer-locked');
+        drawerReturnFocus?.focus?.({ preventScroll: true });
+      };
+      drawerOpen?.addEventListener('click', openDrawer);
       drawer?.addEventListener('click', (e) => {
-        if (e.target === drawer) drawer.removeAttribute('data-open');
+        const target = e.target as HTMLElement;
+        if (target?.dataset.closeDrawer !== undefined || target.closest('[data-close-drawer]')) closeDrawer();
+      });
+      drawer?.querySelectorAll<HTMLAnchorElement>('a').forEach((a) => {
+        a.addEventListener('click', () => closeDrawer());
+      });
+      document.getElementById('drawer-search')?.addEventListener('click', () => {
+        closeDrawer();
+        setTimeout(() => openSearch(), 200);
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && drawer?.getAttribute('data-open') === 'true') closeDrawer();
       });
 
       // Quick-checklist persistence

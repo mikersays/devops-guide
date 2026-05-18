@@ -29,9 +29,9 @@ You cannot operate what you cannot see. In a microservice-based SaaS, a 200ms p9
 
 **The three signals:**
 
-- **Logs**: structured JSON, one event per line, including `trace_id`, `span_id`, `service`, `env`, `request_id`, `user_id` (hashed). Ship via Fluent Bit or vendor agent. Sample debug logs aggressively in prod.
+- **Logs**: structured JSON, one event per line, including `trace_id`, `span_id`, `service`, `env`, `request_id`, `user_id` (hashed). Ship via **Vector** or the **OTel Collector** itself; Fluent Bit is the alternative if you already run it. Sample debug logs aggressively in prod.
 - **Metrics**: RED for every service endpoint; USE (Utilization, Saturation, Errors) for resources. Prometheus exposition format via OTel.
-- **Traces**: head-based sampling at 1–10%; tail-based sampling for errors and slow requests. Propagate W3C trace context across all hops, including async (SQS, Kafka, EventBridge).
+- **Traces**: default to **tail sampling** (Refinery, or the Grafana / OTel tail-sampling processor) so you keep the slow and erroring traces and drop the boring ones. Head sampling at a flat 1–10% is fine only if you're very cost-constrained — don't apply both at the same span. Propagate W3C trace context across all hops, including async (SQS, Kafka, EventBridge).
 
 **SLOs and error budgets:**
 

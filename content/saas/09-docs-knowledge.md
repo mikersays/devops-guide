@@ -68,21 +68,14 @@ Every paging alert links to a runbook. Runbooks live in the service repo (`docs/
 
 Test runbooks during game days; stale runbooks are worse than no runbooks.
 
+### Information architecture
+
+Settle on a single home page that points to the engineering handbook, the service catalog, on-call and incident docs, the ADR index, and onboarding paths by role. A search experience that finds the right doc within 30 seconds is worth more than a third Notion admin.
+
 > **Alternatives:**
 > - **GitBook / Docusaurus / MkDocs** for public-facing docs: pick over Notion when you need versioned, code-adjacent product docs.
 > - **OpsLevel** or **Cortex** as Backstage alternatives: managed, opinionated, faster to value.
 > - **Slab** as a Notion alternative when you want a docs-first (not workspace-first) tool.
-
-## Information architecture
-
-Settle on a single home page that points to:
-- Engineering handbook
-- Service catalog
-- On-call & incident docs
-- ADR index
-- Onboarding paths by role
-
-A search experience that finds the right doc within 30 seconds is worth more than a third Notion admin.
 
 ## Common pitfalls
 

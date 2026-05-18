@@ -1,11 +1,11 @@
 ---
-title: Security & Compliance
+title: Security
 track: saas
 order: 8
 summary: Shift-left DevSecOps with SAST/DAST/SCA, managed secrets, least-privilege IAM, and SOC 2 as a continuous control posture.
 ---
 
-# Security & Compliance
+# Security
 
 ## Why it matters
 
@@ -34,6 +34,23 @@ Security buyers want answers in days, not quarters. A SaaS startup that can cred
 
 Treat findings like flaky tests: triage weekly, suppress them consciously with an expiry date, and fix them on a clock.
 
+### Supply chain
+
+The 2024 npm and PyPI compromises put dependency confusion and typosquatting back on the agenda — package-name squatting and internal-package shadowing are now routine attacks. The minimum bar:
+
+- **Lock and pin** dependencies (lockfiles in CI, deterministic installs); scope private packages to your own registry namespace so a public-registry typo cannot shadow them
+- **Sign and attest builds**: turn on **GitHub artifact attestations** (GA 2024) for container images and release artifacts, or run **Sigstore cosign** directly; verify at deploy time
+- **Enforce at admission**: a **Sigstore policy-controller** (or Kyverno with Sigstore) rule on the cluster that rejects unsigned or untrusted images
+- Aim for **SLSA Level 3** for production build pipelines — hermetic, signed, provenance-tracked. Below that, you're trusting your CI to not be your weakest link.
+
+### Runtime detection (eBPF)
+
+Once you're past basic image scanning, runtime visibility into syscalls and network behavior closes the loop. **Falco** and **Tetragon** both use eBPF to detect things like a container suddenly spawning a shell, reading `/etc/shadow`, or making egress to an unfamiliar endpoint. Start with a small, high-signal rule set; tune before alerting, or you'll teach the team to ignore Falco.
+
+### AI / LLM ops
+
+If product surfaces use LLMs, treat the prompt boundary as an untrusted input. Threat-model against the **OWASP LLM Top 10** (prompt injection, training-data poisoning, sensitive-info disclosure); add prompt-injection filters and output validation in the same place you'd validate any other user input. Track third-party models and their training data in an **MLBOM / AIBOM** alongside your software SBOM — auditors are starting to ask, and the standards (CycloneDX ML-BOM) are stable enough to adopt.
+
 ### Secrets management
 
 - **AWS Secrets Manager** for application secrets (rotate where possible — RDS supports it natively)
@@ -57,7 +74,7 @@ Treat findings like flaky tests: triage weekly, suppress them consciously with a
 
 ### SOC 2 without slowing teams
 
-- Adopt a compliance automation platform: **Vanta**, **Drata**, or **Secureframe** — they map your existing AWS, GitHub, HRIS into evidence
+- Adopt a compliance automation platform — **Drata** is our pick for the SaaS track (its larger-SaaS footprint pulled ahead in 2024-2025), with **Vanta** and **Secureframe** as solid alternatives. All three map your existing AWS, GitHub, HRIS into evidence; the differentiator is workflow polish, not capability.
 - Treat policies as living docs in a wiki, not PDFs in a SharePoint
 - Bake controls into tooling: branch protection = change management; SSO + role review = access control
 - Type I in 3 months is realistic; Type II requires 3–6 months of operating evidence

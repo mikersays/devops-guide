@@ -23,7 +23,7 @@ Branching strategy is the load-bearing decision for your delivery flow. *Acceler
 
 ## Recommended default
 
-**GitHub** for everything. The integrated identity, Actions, Advanced Security, and Projects compound enormously.
+**GitHub** for everything. Integrated identity, Actions, Advanced Security, and Projects mean one auth model and one place to wire everything together — the integration savings show up in every PR.
 
 **Branching: trunk-based.** Feature branches off `main`, merged via squash PR. No `develop`, no `release/*` branches. Use feature flags (see [CI/CD](./03-cicd.md)) for in-flight work.
 

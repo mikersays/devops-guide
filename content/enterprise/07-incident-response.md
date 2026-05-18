@@ -9,9 +9,21 @@ In a regulated environment, incidents have two parallel timelines. One is operat
 
 ## Why it matters
 
-Regulators (HHS for HIPAA, card brands for PCI, state AGs for breach notification, sectoral regulators for finance) impose strict notification windows — often 72 hours or less from discovery. Missing those windows is itself a violation. Meanwhile, the engineering organization needs psychological safety to learn from incidents and prevent recurrence, and legal-driven processes erode that safety. A mature program holds both lines simultaneously.
+Regulators and contractual counterparties (HHS for HIPAA, card brands as contractual counterparties under your acquirer/brand agreements for PCI DSS, state AGs for breach-notification statutes, SEC for public-company cyber disclosure, sectoral financial regulators) impose distinct notification windows. Missing one is itself a violation. The windows vary considerably by regime:
 
-The business risk is concrete: a Sev 1 outage that was handled well operationally but missed a notification window becomes a regulatory matter. A breach where the postmortem turned into a blame exercise produces no learning, and the same class of incident recurs.
+| Regime | Trigger | Notification window |
+|---|---|---|
+| EU GDPR (Art. 33) | Personal-data breach posing risk to data subjects | 72 hours to lead supervisory authority |
+| HIPAA Breach Notification Rule | Breach of unsecured PHI | Up to 60 days to individuals; >500 records also to HHS and media |
+| PCI DSS v4.0.1 | Suspected/confirmed cardholder data compromise | "Immediately" per acquirer and card-brand contract; brand-specific timelines |
+| NYDFS Part 500 | Cybersecurity event | 72 hours to Superintendent |
+| SEC cyber rule (effective Dec 2023) | Material cybersecurity incident | 4 business days, Item 1.05 of Form 8-K |
+| EU NIS2 | Significant incident affecting essential/important entities | 24h early warning, 72h notification, 1-month final report |
+| US state AG / consumer notification | Breach of state-defined personal information | Varies; typically 30-60 days, with some states (e.g., FL, CO) at 30 |
+
+Card brands (Visa, Mastercard, Amex, Discover) are contractual counterparties, not regulators — but the PCI DSS requirements they flow down via acquirers carry penalties (fines, increased transaction fees, loss of card acceptance) that often exceed regulatory enforcement. Meanwhile, the engineering organization needs psychological safety to learn from incidents and prevent recurrence, and legal-driven processes erode that safety. A mature program holds both lines simultaneously.
+
+Two recurring failure patterns are worth naming. A Sev 1 outage that was handled well operationally but missed a notification window converts a recoverable engineering incident into a regulatory enforcement matter, with consent decrees, ongoing monitoring, and potential financial penalties that dwarf the original outage cost. A breach where the postmortem turned into a blame exercise produces no learning, the contributing systems remain unchanged, and the same class of incident recurs — frequently with worse blast radius the second time, because the team that survived the first one has since lost the engineers who knew what failed.
 
 ## What "good" looks like
 
@@ -52,6 +64,8 @@ The business risk is concrete: a Sev 1 outage that was handled well operationall
 
 ## Compliance mapping
 
+> Framework versions per [Overview](./00-overview.md): Annex A clauses reference ISO/IEC 27001:2022; NIST controls reference 800-53 Rev 5; SOC 2 TSC references are the 2017 criteria with the 2022 points-of-focus update. The mapping below does not replace specific regulatory analysis — HIPAA Breach Notification Rule (45 CFR 164.400-414), PCI DSS v4.0.1 Req 12.10, NYDFS Part 500, the SEC cyber rule, DORA, NIS2, and state breach-notification statutes each define "breach" and timelines differently.
+
 | Practice | SOC 2 (TSC) | ISO 27001 (Annex A) | NIST 800-53 |
 |---|---|---|---|
 | Incident response plan and procedures | CC7.3, CC7.4 | A.5.24, A.5.26 | IR-1, IR-4, IR-8 |
@@ -59,8 +73,6 @@ The business risk is concrete: a Sev 1 outage that was handled well operationall
 | Lessons learned / postmortem | CC7.5 | A.5.27 | IR-4, IR-8 |
 | Regulator/customer notification | CC2.3, CC7.4 | A.5.5, A.5.6 | IR-6 |
 | Tabletop exercises | CC7.3 | A.5.24 | IR-3 |
-
-Note: HIPAA Breach Notification Rule (45 CFR 164.400-414), PCI-DSS Req 12.10, and state breach notification laws each have their own definitions of "breach" and timelines; the framework mapping does not replace specific regulatory analysis.
 
 ## Common pitfalls
 

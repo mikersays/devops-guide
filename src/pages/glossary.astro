@@ -58,7 +58,8 @@ const present = new Set(letters.map((l) => l.letter));
   .az:nth-child(13n) { border-right: 0; }
   .az:nth-last-child(-n+13) { border-bottom: 0; }
   .az:hover { background: var(--accent); color: var(--paper); border-color: var(--accent); }
-  .az-empty { color: var(--ink-4); pointer-events: none; }
+  /* Use --ink-3 for empty letters so the disabled state still meets contrast (~4.5:1). */
+  .az-empty { color: var(--ink-3); pointer-events: none; }
 
   .glossary-prose { max-width: var(--measure); }
   .glossary-prose h2 {

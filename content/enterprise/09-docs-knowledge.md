@@ -1,17 +1,15 @@
 ---
-title: Documentation and Knowledge
+title: Docs & Knowledge
 track: enterprise
 order: 9
 summary: Controlled documentation, ADRs as evidence, version-controlled policies, and training records that satisfy audit requirements.
 ---
 
-In a regulated organization, documentation is a control. The auditor will sample policies and ask whether they were approved, whether engineers acknowledged them, and whether reality matches them. Most organizations make the mistake of putting policy in one system (a GRC platform), procedure in another (a wiki), runbooks in a third (Confluence pages decaying since 2019), and design records nowhere at all. The result is a documentation debt that surfaces during every audit.
-
 ## Why it matters
 
-Documentation that auditors trust shares three properties: it is version-controlled, it is approved through a defined process, and it is reachable from the systems it describes. Documentation that engineers trust shares those same properties, plus one more: it is current. The same disciplines satisfy both audiences when designed once.
+In a regulated organization, documentation is a control surface, not a courtesy. The auditor will sample policies and ask whether they were approved, whether engineers acknowledged them, and whether reality matches them. Most organizations make the mistake of putting policy in one system (a GRC platform), procedure in another (a wiki), runbooks in a third (Confluence pages decaying since 2019), and design records nowhere at all. The result is a documentation debt that surfaces during every audit. Documentation that auditors trust shares three properties: it is version-controlled, it is approved through a defined process, and it is reachable from the systems it describes. Documentation that engineers trust shares those same properties, plus one more: it is current. The same disciplines satisfy both audiences when designed once.
 
-The business risk of weak documentation is operational and regulatory. Engineers cannot operate systems they do not understand. Auditors cannot grant opinions on processes they cannot verify. New hires take months to become productive. Knowledge concentrates in a handful of senior engineers, and their departures become incidents.
+Weak documentation accumulates as a tax on every adjacent function. Engineers cannot safely operate systems they do not understand, so runbook gaps become incident-duration multipliers. Auditors cannot grant opinions on processes they cannot verify, so policy gaps become qualified opinions and management-letter comments. New hires take months rather than weeks to become productive, and the cost is denominated in fully-loaded engineering time. Knowledge concentrates in a handful of senior engineers, and their departures turn into recoverable-but-painful incidents that the org has to learn from for two quarters.
 
 ## What "good" looks like
 
@@ -31,7 +29,7 @@ The business risk of weak documentation is operational and regulatory. Engineers
 - **ADRs**: each repo has a `docs/adr/` directory; ADRs are numbered, follow the Nygard template (Context, Decision, Consequences), and are reviewed in PRs. Significant ADRs are linked from the service catalog.
 - **Service catalog**: Backstage as the canonical inventory. Every service registered with `catalog-info.yaml`. Catalog data feeds into the in-scope-systems registry consumed by [Observability](./06-observability.md) and [Security](./08-security.md).
 - **Runbooks**: in the service repo under `docs/runbooks/`, linked from PagerDuty alerts. Runbook drift is caught by a quarterly "did anyone touch this?" report.
-- **Training records**: corporate LMS (e.g., KnowBe4, Workday Learning) handles security awareness, code-of-conduct, role-specific training (HIPAA for those handling PHI, PCI for those in scope, secure coding for engineers). Records export quarterly into the controls matrix.
+- **Training records**: two adjacent categories that are often conflated. **Security awareness platforms** (KnowBe4, Proofpoint Security Awareness, Hoxhunt) handle phishing simulation, security/privacy/HIPAA refreshers, and the role-based security curriculum that maps to SOC 2 CC1.4, ISO A.6.3, and 800-53 AT-2/AT-3. **General corporate LMS** (Workday Learning, Cornerstone, Docebo, SAP SuccessFactors Learning) handles code-of-conduct, manager training, technical certifications, and the broader compliance curriculum (anti-bribery, harassment prevention, export controls). Run them as separate systems integrated to the same identity source rather than expecting one platform to cover both well. Both export quarterly into the controls matrix.
 
 ## Alternatives
 
@@ -42,6 +40,8 @@ The business risk of weak documentation is operational and regulatory. Engineers
 > - **Read the Docs Business / GitBook for technical docs**: pick these as alternatives to MkDocs when hosted-platform features outweigh self-hosting simplicity.
 
 ## Compliance mapping
+
+> Framework versions per [Overview](./00-overview.md): Annex A clauses reference ISO/IEC 27001:2022; NIST controls reference 800-53 Rev 5; SOC 2 TSC references are the 2017 criteria with the 2022 points-of-focus update.
 
 | Practice | SOC 2 (TSC) | ISO 27001 (Annex A) | NIST 800-53 |
 |---|---|---|---|

@@ -11,7 +11,7 @@ Infrastructure as Code in a regulated organization is not about reproducibility 
 
 Most cloud-related audit findings are not about missing controls. They are about controls that existed in policy, were implemented manually once, and then silently decayed. IaC, run through a controlled pipeline with policy-as-code gates, converts a written policy into an enforced control. IaC also produces the artifact auditors increasingly ask for: a deterministic description of what production should look like, with a Git history of every approved change.
 
-The business risk of weak IaC in a regulated org is high. A misconfigured S3 bucket, an over-permissive security group, a forgotten public RDS instance, a non-compliant region selection — these misconfigurations drive real breaches and findings. Policy-as-code is the difference between catching them at PR time and catching them in a pen test.
+In a regulated org, the cost asymmetry of catching IaC defects late is what makes policy-as-code worth the friction. A misconfigured S3 bucket, an over-permissive security group, a forgotten public RDS instance, or a workload that landed in a non-FedRAMP region all start as fifteen-line diffs that a Sentinel or OPA policy would have rejected in ten seconds at PR time. Caught in a pen test, they are a remediation ticket; caught in a customer breach disclosure, they are a Form 8-K Item 1.05 filing and a year of customer-trust repair.
 
 ## What "good" looks like
 
@@ -45,12 +45,14 @@ For shops that prefer open tooling: **OpenTofu + Spacelift** or **OpenTofu + Atl
 
 ## Compliance mapping
 
+> Framework versions per [Overview](./00-overview.md): Annex A clauses reference ISO/IEC 27001:2022; NIST controls reference 800-53 Rev 5; SOC 2 TSC references are the 2017 criteria with the 2022 points-of-focus update.
+
 | Practice | SOC 2 (TSC) | ISO 27001 (Annex A) | NIST 800-53 |
 |---|---|---|---|
 | Configuration management baseline | CC7.1, CC8.1 | A.8.9, A.8.32 | CM-2, CM-3, CM-6 |
 | Policy enforcement before deployment | CC6.6, CC7.1 | A.8.9 | CM-7, SA-15 |
-| Drift detection and reconciliation | CC7.2 | A.8.16 | CM-3, SI-7 |
-| Encryption configuration enforcement | CC6.7 | A.8.24 | SC-13, SC-28 |
+| Drift detection and reconciliation | CC7.2 | A.8.16 | CM-2, CM-6, SI-7 |
+| Encryption configuration enforcement | CC6.1, CC6.7 | A.8.24 | SC-13, SC-28 |
 | Network segmentation as code | CC6.6 | A.8.22 | SC-7 |
 
 ## Common pitfalls

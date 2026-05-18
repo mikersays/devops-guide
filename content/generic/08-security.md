@@ -26,7 +26,10 @@ A layered, mostly automated baseline you can stand up in 4-6 weeks:
 - **Identity:** Okta / Google Workspace / Entra as the IDP. SSO + MFA enforced everywhere. SCIM for provisioning. Quarterly access reviews.
 - **Secrets:** AWS Secrets Manager or Vault. Apps read at runtime. No `.env` in source control. Rotate quarterly minimum.
 - **Pre-commit + CI scanning:** `gitleaks` or GitHub Secret Scanning for committed secrets; **Dependabot** or **Renovate** for dependencies; **Trivy** for container images; **Semgrep** for SAST.
+- **Supply chain:** sign build artifacts with **Sigstore / cosign**, publish provenance via **GitHub artifact attestations** (GA 2024) or the equivalent on your CI, and pin internal package scopes to defeat dependency-confusion and npm/PyPI typosquatting. Once that's in place, target **SLSA Level 3** for production services and enforce verified provenance at admission with **Sigstore policy-controller** (Kubernetes) or your platform's equivalent.
 - **Cloud posture:** **AWS Security Hub** + **GuardDuty** (or equivalents). For multi-cloud or deeper coverage, **Wiz** or **Orca** are worth it at 50+ engineers.
+- **Runtime detection:** eBPF-based agents like **Falco** or **Tetragon** catch the things image scanning cannot — unexpected `exec`s in containers, syscalls outside the normal envelope, surprise outbound connections. Start with one Tier 1 service.
+- **AI/LLM workloads:** if you ship anything that calls an LLM with user input, treat the model endpoint as an internet-facing service: rate-limit it, log prompts and outputs to your security store, and deploy a prompt-injection filter in front. Use the **OWASP LLM Top 10** as your checklist. The biggest near-term risks are prompt injection in agentic tools, indirect injection via retrieved documents, and over-permissioned model service accounts.
 - **Endpoint:** managed fleet (Jamf / Kandji / Intune). Disk encryption enforced. EDR (CrowdStrike, SentinelOne) above 30 employees.
 - **Audit logging:** CloudTrail to a separate, write-only S3 bucket in a security account. IDP and source-control audit logs to the same destination.
 
@@ -42,7 +45,7 @@ Without a **service level agreement** (**SLA**), scan results are decoration. Pi
 
 ## Compliance posture
 
-If you sell to anyone bigger than yourself, you will eventually need SOC 2 Type II. Most of this section already gets you there. **Vanta / Drata / Secureframe** automate evidence collection across cloud, identity provider, ticketing, and HR — they save hundreds of hours in your first audit. Designate a security owner, even part-time, to run the audit and answer customer questionnaires.
+If you sell to anyone bigger than yourself, you will eventually need SOC 2 Type II. Most of this section already gets you there. The compliance-automation tools all do roughly the same thing — connect to cloud, IDP, ticketing, HR; auto-collect evidence; nag you about gaps. Pick **Vanta** as the default for an early-stage org: largest integration surface, easiest auditor handoff, the one your auditors have seen most often. Switch to **Drata** if you need deeper customization or programmatic policy, or **Secureframe** if pricing is dominant. Whichever you pick, designate a security owner — even part-time — to run the audit and answer customer questionnaires.
 
 For HIPAA, PCI-DSS, FedRAMP — see the [Enterprise track](../enterprise/00-overview.md).
 

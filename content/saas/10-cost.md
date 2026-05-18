@@ -9,7 +9,7 @@ summary: FinOps from day one with cost allocation tags, anomaly alerts, and unit
 
 ## Why it matters
 
-Cloud bills are unfounded liabilities until you can attribute them. At Series A you can hand-wave the details; by Series B your investors will ask about gross margin and infrastructure cost-per-customer, and "I don't know" is the wrong answer. FinOps practiced from day one is dramatically cheaper than retrofitting cost discipline after a year of unmanaged growth.
+Cloud bills are unfounded liabilities until you can attribute them. At Series A you can get away with a rough monthly burn number; by Series B your investors will ask about gross margin and infrastructure cost-per-customer, and "I don't know" is the wrong answer. FinOps practiced from day one is dramatically cheaper than retrofitting cost discipline after a year of unmanaged growth.
 
 ## What "good" looks like
 
@@ -59,7 +59,7 @@ Review in a monthly **FinOps standup**: 30 minutes, engineering + finance, actio
 - **Compute Savings Plans** (1-year, no upfront) once steady-state spend is stable — typically 20–30% savings
 - **Reserved Instances** for RDS, OpenSearch — same idea, less flexible
 - **S3 Intelligent-Tiering** by default for new buckets
-- **Graviton** (ARM) for ECS/Lambda where supported — usually 15–20% cheaper, often faster
+- **Graviton** (ARM) for ECS/Lambda where supported — ~20–40% cheaper on Graviton4 vs. comparable x86, often faster too
 - **Spot** for non-critical batch and CI runners
 
 Do not over-commit early. Underutilized commits are worse than on-demand.

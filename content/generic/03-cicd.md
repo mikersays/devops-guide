@@ -36,6 +36,8 @@ Key decisions:
 - Secrets injected at deploy time from a secrets manager (see [Security](./08-security.md)).
 - Environments: at minimum `dev`, `staging`, `production`. Each costs ongoing maintenance.
 - Strategy: rolling for stateless, blue/green for stateful or risky, canary once observability can detect a bad canary.
+- CI authenticates to your cloud via **OIDC federation** — the CI provider (GitHub, GitLab, Buildkite) signs a short-lived token that the cloud trusts via a configured identity provider, so no long-lived access keys live in CI secrets. This is the only credential pattern worth standardizing on for new pipelines; later sections cross-reference here.
+- Once your container builds cross 5 minutes, push them onto a build cache service — **BuildKit remote cache** in your own registry, or a managed runner with persistent cache like **Depot**, **Namespace**, or **Blacksmith**. The difference is usually 3-10x on cold-cache rebuilds.
 
 > **Alternatives:**
 > - **GitLab CI** — pick if you're on GitLab. Excellent integrated experience; the runners are easy to self-host.

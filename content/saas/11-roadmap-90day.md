@@ -15,15 +15,17 @@ Adopting all of this at once is how DevOps initiatives die. Sequence matters: yo
 
 - A new platform initiative that ships in 90 days, not 9 months
 - Each phase has measurable exit criteria, not vibes
-- Leadership and engineering align on what we *won't* do this quarter
+- Leadership and engineering align on what you *won't* do this quarter
 - DORA metrics improve visibly inside the window
-- The 90-day plan ends with the team ready to *operate*, not still *setting up*
+- The 90-day plan ends with you ready to *operate*, not still *setting up*
 
-## Days 0–30: Foundations
+## Recommended default
+
+Three 30-day phases, each compounding on the last. Pick the simplest defaults from each section as you go and resist scope creep — exit criteria, not extra checkboxes, are what move you to the next phase.
+
+### Days 0–30: Foundations
 
 **Goal: stop the bleeding, establish the substrate.**
-
-Pick the simplest defaults from each section. Resist scope creep.
 
 - [ ] AWS Organizations with prod isolated in its own account ([Cloud Platform](./05-cloud-platform.md))
 - [ ] SSO + MFA on every tool; no AWS IAM users
@@ -42,11 +44,11 @@ Pick the simplest defaults from each section. Resist scope creep.
 - Every service has a named owner and an on-call rotation
 - A new engineer can deploy a code change to staging via PR
 
-## Days 31–60: Reliability
+### Days 31–60: Reliability
 
 **Goal: see what's happening, recover faster, reduce surprise.**
 
-Now that you have the substrate, instrument it.
+Now that the substrate is in place, instrument it.
 
 - [ ] OpenTelemetry SDKs in every service; logs/metrics/traces flowing to Datadog or Grafana ([Observability](./06-observability.md))
 - [ ] At least one SLO per user-facing service; error-budget policy documented
@@ -66,7 +68,7 @@ Now that you have the substrate, instrument it.
 - 100% of SEV-1/2 in window have a published postmortem
 - Lead time for changes < 1 day p50
 
-## Days 61–90: Scale
+### Days 61–90: Scale
 
 **Goal: turn the foundations into a paved road; remove bottlenecks before they bite.**
 
@@ -80,7 +82,7 @@ You're now investing in *leverage*, not basics.
 - [ ] Architecture decision records (ADRs) for the top 5 decisions of the quarter
 - [ ] Backstage (or equivalent) evaluated; decision recorded with a trigger date if not yet adopted
 - [ ] Quarterly access review automated
-- [ ] Compliance automation (Vanta / Drata / Secureframe) wired in if pursuing SOC 2
+- [ ] Compliance automation (Drata, with Vanta / Secureframe as alternatives) wired in if pursuing SOC 2
 - [ ] Dedicated platform team formed *or* a documented threshold for when it will be ([Team Structure](./01-team-structure.md))
 - [ ] Telemetry costs and AWS Savings Plans reviewed; first commitments made if appropriate
 - [ ] Game day / chaos drill executed; findings logged into the action-item tracker
@@ -88,11 +90,11 @@ You're now investing in *leverage*, not basics.
 **Exit criteria:**
 - Top three DORA metrics match elite-performer thresholds for at least one service
 - A new service can go from idea to production behind a flag in < 1 week
-- The team is *operating* the platform, not still *building* it
+- You are *operating* the platform, not still *building* it
 
-## After day 90
+### After day 90
 
-This roadmap ends with a posture, not a finish line. Keep a quarterly platform-OKR cadence and re-baseline the DORA metrics each cycle. Most importantly: prune. The engineering org at 80 people needs a different platform than the one at 30 — be willing to retire tools and patterns that earned their keep but are now drag.
+This roadmap ends with a posture, not a finish line. Keep a quarterly platform-OKR cadence and re-baseline DORA each cycle. Most importantly: prune. The engineering org at 80 people needs a different platform than the one at 30 — be willing to retire tools and patterns that earned their keep but are now drag.
 
 > **Alternatives:**
 > - **30/60/90 vs. 6-month plan**: pick a 6-month phasing if you're under-resourced (one platform engineer, zero budget); the principles still apply.
@@ -110,8 +112,11 @@ This roadmap ends with a posture, not a finish line. Keep a quarterly platform-O
 ## Quick checklist
 
 - [ ] 90-day roadmap published with named owners per workstream
-- [ ] Weekly platform standup with progress and blockers
-- [ ] Monthly DORA metrics review with engineering leadership
-- [ ] Each phase has explicit, measurable exit criteria
-- [ ] Quarterly retrospective on the platform program itself
+- [ ] Weekly platform standup with progress and blockers on the calendar
+- [ ] Monthly DORA metrics review with engineering leadership on the calendar
+- [ ] Each phase has explicit, measurable exit criteria written down before the phase starts
+- [ ] Quarterly retrospective on the platform program itself on the calendar
 - [ ] Day-90 review scheduled with leadership before day 0 begins
+- [ ] Post-90 platform OKR cadence in place (quarterly)
+- [ ] A "what we're retiring" list exists alongside the roadmap, with named owners
+- [ ] DORA baseline numbers captured at day 0 so day-90 progress is comparable

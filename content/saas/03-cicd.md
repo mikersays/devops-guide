@@ -33,8 +33,10 @@ Your CI/CD pipeline is the single biggest lever on lead-time-for-changes and cha
 
 **Progressive delivery:**
 - **Blue/green** for stateful or risky changes (DB migrations).
-- **Canary** for typical service deploys; AWS App Mesh, Argo Rollouts, or LaunchDarkly's targeting for traffic split.
+- **Canary** for typical service deploys; Argo Rollouts with a service mesh (Istio Ambient, Linkerd, or AWS VPC Lattice — note that AWS App Mesh reaches EOL in 2026, do not pick it for new work) or LaunchDarkly's targeting for traffic split.
 - **Feature flags**: LaunchDarkly, Unleash, or Statsig. Treat the flag as the release boundary; deploys become non-events.
+
+**Build caching:** A 30-minute CI run is usually 25 minutes of cold compilation. Wire up BuildKit's remote cache (S3 or registry-backed) or a managed cache service like Depot, Namespace, or Blacksmith before you scale runners — cache before muscle.
 
 **Ephemeral preview environments:**
 A preview environment per PR is the highest-leverage CI investment. Stand up a namespaced ECS service or Kubernetes namespace with seeded data, expose it via ALB + dynamic DNS, and tear it down on PR close. This kills "works on my machine" and makes design review concrete.

@@ -10,6 +10,8 @@ Plain-English definitions for the terms used across this guide. Where a term has
 
 **ADR (Architecture Decision Record)** — A short document capturing a single technical decision, the alternatives considered, and the reason for the choice. Lives next to the code.
 
+**Attestation** — Signed metadata about how an artifact was built (provenance), what it contains (SBOM), or what was verified about it (vulnerability scan, policy check). Consumed by policy engines at admission or deploy time.
+
 ## B
 
 **Backstage** — Open-source framework from Spotify for building an internal developer portal. Often used as the UI layer of an internal developer platform.
@@ -36,6 +38,8 @@ Plain-English definitions for the terms used across this guide. Where a term has
 
 **CODEOWNERS** — A file in a repo that maps paths to required reviewers. Used to enforce domain ownership at merge time.
 
+**Conway's Law** — The shape of a system mirrors the communication structure of the org that builds it. Cited in the SaaS team-structure section; usually invoked to justify reshaping teams before reshaping architecture.
+
 ## D
 
 **DAST (Dynamic Application Security Testing)** — Security scanning that probes a running application for vulnerabilities, typically over HTTP.
@@ -46,11 +50,13 @@ Plain-English definitions for the terms used across this guide. Where a term has
 
 **Distributed Tracing** — A telemetry approach where a single request is followed across multiple services using a shared trace ID. The third pillar of observability after metrics and logs.
 
-**DORA Metrics** — The four delivery-performance metrics from the DORA research program: Deploy Frequency, Lead Time for Changes, Change Failure Rate, and Mean Time to Restore.
+**DORA Metrics** — The four engineering-throughput KPIs from the DORA research program: deploy frequency, lead time for changes, change-failure rate, and MTTR. Refreshed annually; the 2024 report tempered the "elite/high/medium/low" cluster framing but the four metrics remain the standard.
 
 **Drift** — Divergence between what your IaC declares and what actually exists in the cloud account. Caused by manual changes, failed applies, or out-of-band tooling.
 
 ## E
+
+**EDP (Enterprise Discount Program)** — AWS's volume-commitment deal, typically a 3-year contract trading a committed annual spend for an account-wide percentage discount. Negotiated bilaterally; usually layered under Savings Plans and RIs rather than replacing them. Equivalent constructs exist on other clouds (Azure MACC, Google CUDs at the org level).
 
 **Error Budget** — The amount of unreliability an SLO permits over a time window. Spent by incidents, recovered by reliable operation. Used to gate risky changes.
 
@@ -80,6 +86,10 @@ Plain-English definitions for the terms used across this guide. Where a term has
 
 **ISO 27001** — An international standard for information security management systems. Common alongside or instead of SOC 2 outside the US.
 
+## K
+
+**Karpenter** — AWS-native Kubernetes node autoscaler. Provisions right-sized nodes directly against EC2 in response to unschedulable pods, skipping the Auto Scaling Group layer. Has effectively replaced Cluster Autoscaler for EKS in most modern setups.
+
 ## L
 
 **Landing Zone** — A pre-configured, opinionated cloud account or set of accounts that new workloads are deployed into. Enforces baseline networking, identity, and guardrails.
@@ -100,9 +110,13 @@ Plain-English definitions for the terms used across this guide. Where a term has
 
 **Observability** — The ability to ask new questions of a running system without shipping new code. Operationally: metrics, logs, and traces, plus the discipline to use them.
 
+**OIDC (workload federation)** — Using OpenID Connect to issue short-lived credentials from a trusted identity provider to a workload (e.g., GitHub Actions exchanging a job-scoped JWT for AWS STS credentials). Lets CI runners and other workloads operate without long-lived static keys. Now the default supply-chain hygiene baseline.
+
 **On-call** — A rotation where engineers are responsible for responding to alerts outside business hours. Should be paid, bounded, and reviewed.
 
 **OpenTelemetry (OTel)** — A vendor-neutral standard and SDK for emitting metrics, logs, and traces. Reduces lock-in to a specific observability backend.
+
+**OTel Collector vs SDK** — The SDK lives in your application code and produces telemetry; the Collector is a standalone process (sidecar, daemonset, or gateway) that receives, transforms, batches, and exports telemetry to one or more backends. Most production setups run both — SDK in-process for instrumentation, Collector out-of-process for routing and backend independence.
 
 **OPA (Open Policy Agent)** — A general-purpose policy engine. Used to enforce policy-as-code over Kubernetes, Terraform, CI, and APIs.
 
@@ -122,7 +136,7 @@ Plain-English definitions for the terms used across this guide. Where a term has
 
 **RACI** — A responsibility-assignment matrix labelling each task as Responsible, Accountable, Consulted, or Informed. Useful for shared platform work.
 
-**Reserved Instance (RI)** — A cloud commitment to use a given instance type for 1 or 3 years in exchange for a discount. Largely superseded by Savings Plans on AWS.
+**Reserved Instance (RI)** — A cloud commitment to use a given instance type for 1 or 3 years in exchange for a discount. Largely superseded by Savings Plans for EC2/Lambda/Fargate compute, but still the only purchase model for RDS, OpenSearch, ElastiCache, and Redshift.
 
 **Runbook** — A short, opinionated document describing how to handle a specific operational scenario. Should be linked from the alert that triggers it.
 
@@ -130,7 +144,9 @@ Plain-English definitions for the terms used across this guide. Where a term has
 
 **SAST (Static Application Security Testing)** — Security scanning that analyzes source code or build artifacts without executing them.
 
-**SBOM (Software Bill of Materials)** — A machine-readable inventory of the components and dependencies in a piece of software. Increasingly required for supply-chain compliance.
+**Savings Plans** — AWS commitment model that discounts compute spend in exchange for a 1- or 3-year hourly-dollar commitment. Three flavors: **Compute Savings Plans** (covers EC2, Lambda, and Fargate; most flexible, lowest discount), **EC2 Instance Savings Plans** (locked to an instance family and region; higher discount, less flexible), and **SageMaker Savings Plans** (ML training/inference). Enterprise customers typically layer Savings Plans under an EDP.
+
+**SBOM / MLBOM / AIBOM** — Software / Machine Learning / AI Bill of Materials: machine-readable inventories of the components and dependencies in an artifact. SBOMs cover code and libraries; MLBOMs add datasets, model weights, and training pipelines; AIBOMs further include prompts, system prompts, and integrated services. CycloneDX and SPDX are the two dominant formats. Increasingly required for supply-chain compliance.
 
 **SCA (Software Composition Analysis)** — Scanning of third-party dependencies for known vulnerabilities and license issues.
 
@@ -140,6 +156,8 @@ Plain-English definitions for the terms used across this guide. Where a term has
 
 **Showback** — A FinOps model where cloud spend is reported back to teams without actually moving budget. Less friction than chargeback, weaker incentive.
 
+**Sigstore / Cosign** — Open-source toolchain for signing software artifacts using short-lived OIDC-issued certificates (no long-lived signing keys to rotate or leak). Cosign is the CLI most people interact with; Fulcio issues the certificates and Rekor records them in a public transparency log. The de facto signing stack underneath SLSA-aligned pipelines.
+
 **Single-tenant** — A separate deployment per customer. Higher operational cost, simpler blast-radius story, often required in regulated B2B.
 
 **SLA (Service Level Agreement)** — A contractual commitment to a customer about reliability or performance, with consequences for breach.
@@ -147,6 +165,8 @@ Plain-English definitions for the terms used across this guide. Where a term has
 **SLI (Service Level Indicator)** — A measured property of the service, like request success rate or latency at a percentile.
 
 **SLO (Service Level Objective)** — A target for an SLI over a time window. Internal commitment, looser than an SLA, drives the error budget.
+
+**SLSA (Supply-chain Levels for Software Artifacts)** — Framework (v1.0, 2023) for grading the integrity of a software build system. Levels 1–3 step up requirements for provenance, isolated builds, and tamper-resistance. **Level 3 is the realistic enterprise target** — Level 4 exists but its requirements (two-party review of every build-system change, hermetic builds) are punishing outside of a handful of platform teams.
 
 **SOC 2** — A US audit framework covering controls around security, availability, confidentiality, processing integrity, and privacy. Common B2B SaaS requirement.
 

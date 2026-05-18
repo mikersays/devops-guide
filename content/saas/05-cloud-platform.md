@@ -34,13 +34,11 @@ Your runtime choice sets the floor on operational complexity for years. Picking 
 | Data plane needing custom networking, sidecars, complex topology | **EKS** |
 | Stateful (DB, cache, search) | **RDS / Aurora**, **ElastiCache**, **OpenSearch** — managed services |
 
-**Default for a new microservice: ECS Fargate.** It gives you containers without the EKS operational tax. Move to EKS only when you have ≥3 of:
+**Default for a new microservice: ECS Fargate** under ~10 services. Past that, **EKS Auto Mode** (GA late 2025) is a peer option: AWS manages the control plane, node lifecycle, and add-ons, which collapses most of the historical "EKS operational tax" argument. Pick between them on what your team actually wants to manipulate:
 
-- 20+ services with shared platform concerns (service mesh, complex traffic policies)
-- Need for advanced scheduling, custom controllers, or operators
-- A platform team that can own EKS upgrades and node lifecycles
-- Multi-tenancy or workload isolation patterns Fargate can't express
-- Cost pressure where reserved EC2 / Graviton beats Fargate's premium
+- **Stay on ECS Fargate** when your services are mostly stateless HTTP/gRPC, you don't need custom controllers or sidecars, and your team has no Kubernetes muscle memory you want to use.
+- **Move to (or start on) EKS Auto Mode** once you cross ~10 services, want service-mesh patterns (mTLS everywhere, traffic policies), have operators or CRDs you want to run (Argo, Crossplane, KEDA), or want pod-level cost allocation that Fargate makes awkward.
+- **Self-managed EKS** (your own node groups, Karpenter, add-ons) only makes sense at meaningful scale or with cost pressure where reserved EC2 / Graviton clearly beats Fargate / Auto Mode pricing.
 
 ### VPC layout
 
@@ -80,7 +78,7 @@ You do not need to *run* multi-region day one — you need to *not preclude it*.
 - [ ] AWS Organizations with prod isolated in its own account
 - [ ] SSO (IAM Identity Center / Okta) for all human access; zero IAM users
 - [ ] Documented runtime decision tree shared with engineering
-- [ ] Default new service runs on Fargate or Lambda; EKS gated
+- [ ] Default new service runs on Fargate or Lambda below ~10 services; EKS Auto Mode considered above that
 - [ ] VPC follows public / private-app / private-data tiering
 - [ ] VPC endpoints for S3, ECR, Secrets Manager, STS
 - [ ] Mandatory tags on all resources (see [IaC](./04-iac.md))

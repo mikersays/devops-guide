@@ -1,5 +1,5 @@
 ---
-title: Cost and FinOps
+title: Cost & FinOps
 track: enterprise
 order: 10
 summary: Showback and chargeback, cost governance, reserved capacity and Enterprise Discount Programs, and a central FinOps function.
@@ -11,7 +11,7 @@ In an enterprise of 200+ engineers, cloud spend is rarely a runaway problem and 
 
 Cloud spend in regulated organizations is constrained by financial controls, not just engineering preferences. **Enterprise Discount Programs** (**EDPs**), reserved instances, and savings plans involve multi-year financial commitments that finance leadership signs off on. Misallocated spend creates intercompany accounting issues. Untagged resources create audit findings around asset inventory. A FinOps function that sits on top of well-tagged, well-bounded accounts produces accurate showback and credible forecasts. One that sits on top of a tagging mess produces guesses.
 
-The business risk is concrete: missing the EDP target by 10% costs millions; over-committing on reserved capacity costs millions in a different direction; and when per-team cost visibility is absent, engineering decisions are made without economic context.
+The financial-control failure modes are specific and asymmetric. Missing the EDP target by 10% in a $100M committed-spend deal means giving back $10M in discounts and renegotiating from a weaker position. Over-committing on reserved capacity costs the same amount in the other direction — millions in unused commitment that hits the income statement as wasted cloud spend. And in the absence of per-team cost visibility, engineering decisions about retention, replication, and architecture get made entirely without economic context, with cost effects that compound silently across quarters.
 
 ## What "good" looks like
 
@@ -43,6 +43,8 @@ The business risk is concrete: missing the EDP target by 10% costs millions; ove
 > - **In-house data warehouse (CUR + dbt + Looker/Tableau)**: pick this only if you have the analytics engineering capacity and want full control; significant ongoing investment.
 
 ## Compliance mapping
+
+> Framework versions per [Overview](./00-overview.md): Annex A clauses reference ISO/IEC 27001:2022; NIST controls reference 800-53 Rev 5; SOC 2 TSC references are the 2017 criteria with the 2022 points-of-focus update.
 
 | Practice | SOC 2 (TSC) | ISO 27001 (Annex A) | NIST 800-53 |
 |---|---|---|---|

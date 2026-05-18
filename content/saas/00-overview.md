@@ -13,15 +13,17 @@ If you are a Series A–C SaaS company, your competitive advantage is the rate a
 
 ## What "good" looks like
 
-Borrow the **DevOps Research and Assessment** (**DORA**) metrics from *Accelerate* as your North Star. Elite performers hit:
+Borrow the **DevOps Research and Assessment** (**DORA**) metrics as your North Star. The DORA 2024 elite thresholds:
 
-- **Deploy frequency**: on-demand, multiple times per day per service
-- **Lead time for changes**: < 1 hour from commit to production
-- **Change failure rate**: 0–15%
+- **Deploy frequency**: on-demand (multiple deploys per day)
+- **Lead time for changes**: < 1 day from commit to production
+- **Change failure rate**: < 5%
 - **Mean Time to Restore** (**MTTR**): < 1 hour
 - Every engineer can ship to production on day 5, behind a feature flag, without paging anyone
 - Infrastructure is code; clicking in consoles for production is a bug, not a workflow
 - One person on-call can diagnose any service via dashboards and traces in under 10 minutes
+
+(Source: DORA 2024 *State of DevOps* report.)
 
 If your numbers are an order of magnitude off, you have a process or platform problem, not a people problem.
 
@@ -37,12 +39,7 @@ A modern SaaS stack centered on AWS, with Kubernetes treated as optional rather 
 - **Security**: GitHub Advanced Security + Snyk + AWS Secrets Manager
 - **Docs**: Notion for prose, ADRs in-repo, Backstage when service count > 15
 
-This stack gets a 5-person team to elite DORA performance in 60–90 days without an army of platform engineers.
-
-> **Alternatives:**
-> - **GCP-native**: Cloud Run + Cloud Build + Artifact Registry + Cloud Logging. Pick if your team has deep GCP fluency or you're using BigQuery as your data plane.
-> - **Azure-native**: Container Apps + Azure DevOps or GitHub Actions + Bicep. Pick if you're enterprise-adjacent or selling into Microsoft-heavy verticals.
-> - **Heroku/Render/Fly.io**: PaaS-first. Pick under 5 engineers when AWS complexity is not yet justified.
+This stack is the smallest set we'd run for a 5-person team chasing DORA elite — additions add ops cost faster than they add throughput. The same shape works on GCP (Cloud Run + Cloud Build + Artifact Registry, especially if BigQuery is already your data plane) or Azure (Container Apps + GitHub Actions + Bicep, useful when you're selling into Microsoft-heavy verticals). Under five engineers, a PaaS like Render or Fly.io is often the right starting point — AWS complexity isn't yet earned.
 
 ## Tradeoffs vs. other tracks
 

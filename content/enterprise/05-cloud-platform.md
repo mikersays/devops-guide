@@ -5,13 +5,13 @@ order: 5
 summary: Landing zones, account hierarchy, network segmentation, and region selection for regulated and sovereign workloads.
 ---
 
-The cloud landing zone is the foundation every other control rests on. Get the account structure, identity, and network boundaries right at the start and the rest of the program is achievable. Get them wrong, and every subsequent control is a workaround.
+The cloud landing zone is the foundation every other control rests on. Get the account structure, identity, and network boundaries right at the start and the rest of the program becomes tractable: PCI scope stays contained, FedRAMP boundaries are defensible without flat-account contortions, IAM segregation maps cleanly to job functions, blast-radius for any single misconfiguration is one account rather than the estate, and you can vend a fully-controlled new account in minutes rather than negotiating with a central networking team for weeks. Get them wrong, and every subsequent control is a workaround.
 
 ## Why it matters
 
 Account boundaries are blast-radius boundaries. Network segmentation is the difference between "an EC2 instance was compromised" and "the cardholder data environment was breached." Region selection determines whether you are FedRAMP-eligible, GDPR-compliant, and in-scope for HIPAA. These choices are expensive to reverse; an enterprise that decides to consolidate 1,200 AWS accounts into a Control Tower hierarchy after the fact will spend 18-24 months doing it.
 
-The business risk of a poor landing zone is structural. PCI scope creep across a flat account expands every audit. A single shared production VPC means a misconfigured security group is a control failure. A workload accidentally placed in a non-FedRAMP region is a contract breach.
+The downstream cost of a poor landing zone is structural rather than incremental. PCI scope creep across a flat account expands every audit, every QSA engagement, and every penetration-test scope. A single shared production VPC means a misconfigured security group is a finding against the whole estate, not one tenant. A workload accidentally placed in a non-FedRAMP region is a contract breach with your federal customer and a potential FedRAMP authorization issue.
 
 ## What "good" looks like
 
@@ -34,6 +34,8 @@ The business risk of a poor landing zone is structural. PCI scope creep across a
 - **Guardrails**: Control Tower mandatory and strongly recommended controls enabled; supplemented with custom SCPs (deny root user, deny public S3 in regulated OUs, deny IMDSv1, deny disabling CloudTrail).
 - **Logging**: CloudTrail organization trail, VPC Flow Logs, DNS query logs, and Config snapshots all delivered to the log archive account, with Object Lock for retention.
 
+**IPv6 strategy.** Since February 2024 AWS charges $0.005 per public IPv4 address per hour (about $43/year for each idle EIP) and the other hyperscalers are converging on similar pricing. At enterprise scale this is the difference between a five-figure and a six-figure annual line item, and it is also a security argument: every public IPv4 is an attack surface a NAT/egress-only IPv6 topology removes. Pattern: egress-only IPv6 for internal services, dual-stack Application Load Balancers (and CloudFront / Azure Front Door / Cloud Load Balancing) for public ingress, IPv6-only Pod networking in new EKS/AKS/GKE clusters, and a reclamation sweep on EIPs older than 90 days. Treat this as a landing-zone decision rather than a per-team optimization — retrofitting IPv6 is expensive.
+
 For Azure: **Azure Landing Zones (Cloud Adoption Framework)** with management groups mirroring the OU structure, Azure Policy in place of SCPs, Entra ID for identity, and a hub-spoke topology with Azure Firewall. For GCP: **Google Cloud Foundation Fabric** or the Security Foundations Blueprint, with org policies, folder hierarchy, and VPC Service Controls.
 
 ## Alternatives
@@ -45,12 +47,14 @@ For Azure: **Azure Landing Zones (Cloud Adoption Framework)** with management gr
 
 ## Compliance mapping
 
+> Framework versions per [Overview](./00-overview.md): Annex A clauses reference ISO/IEC 27001:2022; NIST controls reference 800-53 Rev 5; SOC 2 TSC references are the 2017 criteria with the 2022 points-of-focus update.
+
 | Practice | SOC 2 (TSC) | ISO 27001 (Annex A) | NIST 800-53 |
 |---|---|---|---|
 | Account/tenant boundary controls | CC6.1, CC6.6 | A.5.15, A.8.3 | AC-3, AC-4, SC-7 |
 | Centralized identity and federation | CC6.1, CC6.2 | A.5.16, A.5.18 | IA-2, AC-2 |
 | Network segmentation | CC6.6 | A.8.22 | SC-7, SC-32 |
-| Region/data-residency controls | CC6.1 | A.5.34, A.8.10 | AC-4, SC-7 |
+| Region/data-residency controls | CC6.1 | A.5.14, A.5.34 | AC-4, SC-7 |
 | Centralized logging architecture | CC7.2 | A.8.15, A.8.16 | AU-3, AU-6, AU-9 |
 
 ## Common pitfalls

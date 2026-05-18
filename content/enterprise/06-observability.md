@@ -11,7 +11,7 @@ In a regulated organization, observability serves two distinct customers: engine
 
 Logs are evidence. Metrics are evidence. Traces are usually not evidence, but they are how you drive MTTR down. The control objectives are to retain audit-relevant logs for the period your framework requires (often seven years for financial systems), protect them from tampering and unauthorized deletion, and make them queryable for both incident response and audit fieldwork. Failing any of these creates a finding that is expensive to remediate.
 
-The business risk is twofold. Insufficient retention means an investigator cannot reconstruct a 90-day-old incident. Insufficient SLO discipline means engineers learn about outages from customers. Both are predictable failures of an unmaintained observability program.
+Two failure modes drive most observability findings in regulated organizations. Insufficient retention is the audit-side failure: the SIEM had the event, the index aged out at 90 days, and the investigator now reconstructing a 13-month-old breach from EDR samples is paying for a control that was never really there. Insufficient SLO discipline is the operational-side failure: engineers learn about Tier 1 outages from the support inbox, MTTR drifts upward, and the SRE function ends up running on dashboards nobody believes. Both are predictable failures of an observability program that nobody owns end-to-end.
 
 ## What "good" looks like
 
@@ -24,7 +24,11 @@ The business risk is twofold. Insufficient retention means an investigator canno
 
 ## Recommended default
 
-**Splunk Enterprise (or Splunk Cloud Platform with FedRAMP if applicable) for SIEM and audit logs**, plus **Datadog for operational observability**:
+**Splunk Enterprise (or Splunk Cloud Platform Government, FedRAMP Moderate, if you have federal scope) for SIEM and audit logs**, plus **Datadog for operational observability**.
+
+A vendor-risk note before you sign a multi-year Splunk ELA: Cisco closed its acquisition of Splunk in March 2024, and the integrated product roadmap (XDR, Cisco Hypershield, AppDynamics convergence) is still settling. For new FedRAMP builds or organizations that have not yet committed, treat **Microsoft Sentinel** (strong in Microsoft-aligned shops, native Defender integration, FedRAMP High) and **Google Security Operations** (formerly Chronicle; FedRAMP High, strong threat intel integration via Mandiant) as serious alternatives rather than fallbacks. The operating model below assumes Splunk; the equivalents map cleanly.
+
+The pipeline architecture:
 
 - **Audit/security tier (Splunk)**: receives CloudTrail, Azure Activity Logs, GCP Audit Logs, IdP logs (Okta/Entra), GitHub/GitLab audit logs, Terraform Enterprise audit logs, EDR telemetry, and privileged session recordings. Indexes are role-segregated; SecOps and Internal Audit have read access; nobody has delete access without a documented break-glass procedure.
 - **Operational tier (Datadog)**: APM, logs, metrics, RUM. Engineers have broad read access to their service's data; production write access for monitor changes goes through CODEOWNERS-reviewed Terraform.
@@ -32,6 +36,8 @@ The business risk is twofold. Insufficient retention means an investigator canno
 - **SLOs**: Datadog SLO objects defined in Terraform per service, derived from a service catalog. Burn-rate alerts page on-call; slow-burn alerts go to the team backlog.
 - **Audit log streaming**: every in-scope system streams to Splunk via dedicated forwarders or HEC tokens. AppSec reviews the source list quarterly against the in-scope-systems registry.
 - **Tamper protection**: log archive S3 buckets use Object Lock in compliance mode; the account holding them is in the Security OU and unwritable from workload accounts.
+
+**eBPF observability.** A capable supplement to the agent-and-log model. Run **Cilium Tetragon** (or Falco) for kernel-level security event capture — process execution, file access, network connections — feeding the SIEM, useful both for runtime threat detection and for evidence of "what actually executed in production." Use **Pixie** for ephemeral, no-instrumentation application observability on Kubernetes (Auto-telemetry on HTTP, gRPC, DB calls; data stays in-cluster which helps with PHI/PCI handling). Use **Parca** (or Polar Signals Cloud) for continuous CPU/memory profiling across the fleet at sub-1% overhead. The combined story is "we know what every process did, on every node, at any timestamp in the retention window" — which closes a class of audit questions that agent-based tooling answers poorly.
 
 ## Alternatives
 
@@ -44,12 +50,14 @@ The business risk is twofold. Insufficient retention means an investigator canno
 
 ## Compliance mapping
 
+> Framework versions per [Overview](./00-overview.md): Annex A clauses reference ISO/IEC 27001:2022; NIST controls reference 800-53 Rev 5; SOC 2 TSC references are the 2017 criteria with the 2022 points-of-focus update.
+
 | Practice | SOC 2 (TSC) | ISO 27001 (Annex A) | NIST 800-53 |
 |---|---|---|---|
-| Audit log generation and retention | CC7.2 | A.8.15 | AU-2, AU-11, AU-12 |
+| Audit log generation and retention | CC7.2 | A.8.15, A.5.33 | AU-2, AU-11, AU-12 |
 | Log integrity protection | CC7.2 | A.8.15 | AU-9 |
 | Security monitoring (SIEM) | CC7.2, CC7.3 | A.8.16 | SI-4, AU-6 |
-| Capacity and performance monitoring | A1.1 | A.8.6 | SI-4, SC-5 |
+| Capacity and performance monitoring | A1.1 | A.8.6 | SC-5, CP-2 |
 | Time synchronization for log correlation | CC7.2 | A.8.17 | AU-8 |
 
 ## Common pitfalls

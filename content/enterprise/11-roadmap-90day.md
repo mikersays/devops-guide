@@ -11,7 +11,7 @@ This roadmap is for the platform leader walking into a regulated organization wi
 
 Regulated organizations rarely fail at DevOps because they cannot identify the right work. They fail because they tackle it in the wrong order: tools before structure, pipelines before identity, automation before evidence. This roadmap sequences the work so that each phase produces a defensible artifact and unblocks the next phase. By day 90 you should have a controls foundation, a working pipeline pattern with one product team on it, and a credible plan to scale.
 
-The business risk of a poorly sequenced first quarter is concrete: you spend the political capital of a new mandate on visible-but-shallow wins, the audit shows up, and the program loses credibility before the deeper work lands.
+Poor sequencing in the first quarter has a predictable arc: the political capital of a new mandate is spent on visible-but-shallow wins (a fancy IDP UI, a tooling rebrand, a posture-score dashboard), audit fieldwork arrives in month four, the underlying controls turn out to be unchanged, and the program loses its sponsor before the deeper work lands. Once that happens, the next mandate is harder to secure and the team that joined for the modernization story starts leaving.
 
 ## What "good" looks like
 
@@ -52,7 +52,7 @@ Goal: prove the pattern scales, prepare for the next audit, set the next-quarter
 - **Onboard 2-3 more teams** (week 11-12): apply lessons from the pilot. Document the onboarding playbook. Measure time-to-onboard.
 - **Incident response** (week 10-12): publish severity matrix, on-call rotation policy, postmortem template. Run one tabletop. See [Incident Response](./07-incident-response.md).
 - **Vulnerability management SLAs** (week 11-12): publish, instrument, dashboard. Hold the first SLA review.
-- **Documentation discipline** (week 11-13): policy repo live, ADR template adopted, service catalog populated for in-scope services. See [Docs and Knowledge](./09-docs-knowledge.md).
+- **Documentation discipline** (week 11-13): policy repo live, ADR template adopted, service catalog populated for in-scope services. See [Docs & Knowledge](./09-docs-knowledge.md).
 - **Cost foundations** (week 12-13): tagging policy enforced for all new resources; first showback dashboards published. See [Cost](./10-cost.md).
 - **Audit dry run** (week 13): pick a control area (change management or access provisioning). Run an internal audit dry run with Internal Audit. Fix what fails.
 - **Day 90 deliverable**: 2-3 teams in production on the platform, audit dry run passed, 6-month roadmap committed.
@@ -65,6 +65,8 @@ Goal: prove the pattern scales, prepare for the next audit, set the next-quarter
 > - **Audit-first plan**: pick this when an audit is in the next 60 days and the priority is not failing it; sequence the controls matrix and evidence work first, take the velocity hit, recover later.
 
 ## Compliance mapping
+
+> Framework versions per [Overview](./00-overview.md): Annex A clauses reference ISO/IEC 27001:2022; NIST controls reference 800-53 Rev 5; SOC 2 TSC references are the 2017 criteria with the 2022 points-of-focus update.
 
 | Practice | SOC 2 (TSC) | ISO 27001 (Annex A) | NIST 800-53 |
 |---|---|---|---|

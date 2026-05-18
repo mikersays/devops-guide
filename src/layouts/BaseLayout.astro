@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import ComplianceBanner from '../components/ComplianceBanner.astro';
 import { TRACKS, TRACK_ORDER, type TrackId } from '../lib/tracks';
 
 interface Props {
@@ -49,6 +50,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <body data-track={track ?? undefined}>
     <a href="#main" class="visually-hidden">Skip to content</a>
     <Nav currentTrack={track} currentPath={currentPath} />
+    {track === 'enterprise' && <ComplianceBanner />}
 
     <main id="main">
       <slot />
@@ -153,9 +155,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       const darkIcon = document.querySelector<HTMLElement>('.theme-icon-dark');
       const syncThemeIcons = () => {
         const t = document.documentElement.getAttribute('data-theme');
+        const isDark = t === 'dark';
         if (lightIcon && darkIcon) {
-          lightIcon.style.display = t === 'dark' ? 'none' : '';
-          darkIcon.style.display = t === 'dark' ? '' : 'none';
+          lightIcon.style.display = isDark ? 'none' : '';
+          darkIcon.style.display = isDark ? '' : 'none';
+        }
+        if (themeBtn) {
+          themeBtn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+          themeBtn.setAttribute('title', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+          themeBtn.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
         }
       };
       syncThemeIcons();
@@ -196,9 +204,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         if ((e.target as HTMLElement).dataset.close === 'true') closeSearch();
       });
       document.addEventListener('keydown', (e) => {
-        if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        const tag = document.activeElement?.tagName;
+        const inField = tag === 'INPUT' || tag === 'TEXTAREA';
+        // Cmd/Ctrl+K — works everywhere (including inside fields), like most modern search UIs.
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
           e.preventDefault();
           openSearch();
+          return;
+        }
+        // '/' — convenience shortcut, but only when not typing in a field.
+        if (e.key === '/' && !inField) {
+          e.preventDefault();
+          openSearch();
+          return;
         }
         if (e.key === 'Escape') closeSearch();
       });

@@ -84,5 +84,5 @@ Templates matter — use one. Include: summary, impact, duration; timestamped ti
 - [ ] Postmortem action items are tracked in your normal backlog.
 - [ ] On-call hand-off happens weekly with a structured agenda.
 - [ ] Engineers are compensated for being on-call.
-- [ ] Status page exists and is updated during customer-facing incidents.
+- [ ] Status page exists and was updated during the last customer-facing incident.
 - [ ] You have run at least one game day in the last quarter.

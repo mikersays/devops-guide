@@ -38,7 +38,7 @@ Concrete setup:
 
 ## Optimization patterns (in order of ROI)
 
-1. **Right-size compute.** Most fleets run at 10-20% utilization. Scale down. Use ARM/Graviton — typically 20% cheaper for equivalent performance.
+1. **Right-size compute.** Most fleets run at 10-20% utilization. Scale down. Move workloads to ARM/Graviton where the runtime supports it — Graviton4 is roughly 20-40% cheaper than equivalent x86 instances and is often faster on real workloads, not just on price.
 2. **Kill dev/staging at night.** Weekday-only schedules save ~70% on non-prod compute.
 3. **Savings Plans / RIs.** For steady-state baseline (bottom 60-70% of usage), 1-year commits save 30-40%. Don't over-commit.
 4. **Storage tiering.** S3 Intelligent-Tiering is the lazy default and usually correct.

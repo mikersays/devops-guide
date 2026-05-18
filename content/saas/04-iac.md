@@ -29,7 +29,7 @@ ClickOps in AWS is technical debt with compounding interest: undocumented, un-re
 - A dedicated `infrastructure/` repo (or top-level dir in monorepo)
 - Composable modules: `vpc/`, `eks/`, `ecs-service/`, `rds/`, `iam-role/`, `dns/`
 - Stacks per environment: `envs/dev`, `envs/staging`, `envs/prod` — each calls modules with parameters
-- Use [Terragrunt](https://terragrunt.gruntwork.io/) when DRY across environments becomes painful
+- For DRY across environments: [Terramate](https://terramate.io/) or [HCP Terraform Stacks](https://developer.hashicorp.com/terraform/cloud-docs/stacks) / `tofu stacks` are now the better picks. Terragrunt still works but is losing ground — fine to keep if you've already standardized on it.
 
 **Remote state**: S3 bucket + DynamoDB lock table per environment, encrypted with KMS, access-controlled. Or use **HCP Terraform** / **Spacelift** / **env0** for managed state + run pipelines.
 

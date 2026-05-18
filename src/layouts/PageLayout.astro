@@ -24,6 +24,7 @@ const { title, description, variant = 'prose', eyebrow } = Astro.props;
 <style is:global>
   .page-prose { max-width: var(--measure); margin-inline: auto; padding-block: var(--sp-7) var(--sp-9); }
   .page-prose .eyebrow { margin-bottom: var(--sp-3); display: inline-block; }
-  .page-wide { padding-block: var(--sp-7) var(--sp-9); }
+  /* 'wide' variant doesn't get a right gutter, so centre it inside the .container max width. */
+  .page-wide { max-width: 64rem; margin-inline: auto; padding-block: var(--sp-7) var(--sp-9); }
   .page-landing { padding-block: 0 var(--sp-9); }
 </style>

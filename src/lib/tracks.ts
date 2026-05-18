@@ -65,13 +65,26 @@ export function isTrack(value: unknown): value is TrackId {
 }
 
 // Pretty-print a section key → e.g. '03-cicd' → 'CI / CD'
+// Acronyms that should render with specific casing rather than Title-case.
+const ACRONYMS: Record<string, string> = {
+  cicd: 'CI / CD',
+  iac: 'IaC',
+  slo: 'SLO',
+  slsa: 'SLSA',
+  oidc: 'OIDC',
+  otel: 'OTel',
+  eks: 'EKS',
+  aws: 'AWS',
+  gcp: 'GCP',
+  mttr: 'MTTR',
+};
+
 export function sectionDisplay(key: string): string {
   const s = key.replace(/^\d+-/, '');
   return s
     .split('-')
     .map((w) => {
-      if (w === 'cicd') return 'CI / CD';
-      if (w === 'iac') return 'IaC';
+      if (w in ACRONYMS) return ACRONYMS[w];
       return w.charAt(0).toUpperCase() + w.slice(1);
     })
     .join(' ');

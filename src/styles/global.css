@@ -230,6 +230,10 @@ hr {
   margin-block: var(--sp-7);
 }
 
+/* Permalink anchor on H2/H3/H4. Content is decorative-only — the glyph is
+   rendered via ::after so it never leaks into Astro's heading collector
+   (right-rail TOC) or into Pagefind snippets. The `data-pagefind-ignore`
+   attribute on the link is belt-and-suspenders. */
 .heading-anchor {
   margin-left: 0.4em;
   color: var(--ink-4);
@@ -238,10 +242,16 @@ hr {
   font-size: 0.7em;
   opacity: 0;
   transition: opacity 120ms ease;
+  text-decoration: none;
+}
+.heading-anchor::after {
+  content: '\00a7'; /* § — visual only */
+  display: inline-block;
 }
 h2:hover .heading-anchor,
 h3:hover .heading-anchor,
-h4:hover .heading-anchor { opacity: 1; }
+h4:hover .heading-anchor,
+.heading-anchor:focus-visible { opacity: 1; }
 .heading-anchor:hover { color: var(--accent); }
 
 /* ----------------------------------------------------------------------------
@@ -505,14 +515,15 @@ pre code { background: transparent; border: 0; padding: 0; white-space: pre; fon
   font-size: var(--fs-meta);
 }
 
-/* Drop cap on the first "Why it matters" paragraph of each section */
+/* Drop cap on the first "Why it matters" paragraph of each section.
+   Sized so line 2 of the paragraph clears the cap (2-line cap, not 3). */
 .prose .lede::first-letter {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 3.4em;
-  line-height: 0.9;
+  font-size: 2.2em;
+  line-height: 1;
   float: left;
-  margin: 0.05em 0.12em 0 -0.04em;
+  margin: 0.1em 0.15em 0 0;
   color: var(--accent);
   font-feature-settings: 'ss01';
 }
@@ -625,12 +636,18 @@ pre code { background: transparent; border: 0; padding: 0; white-space: pre; fon
   font-size: var(--fs-micro);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink-2);
+  /* Use --ink (not --ink-2) for inactive tabs so contrast clears WCAG AA.
+     Active tab is styled separately below. */
+  color: var(--ink);
   border-right: 1px solid var(--rule);
   background: var(--paper);
 }
 .track-tabs a:last-child { border-right: 0; }
 .track-tabs a:hover { background: var(--paper-2); color: var(--ink); }
+.track-tabs a[data-track-active='false'] {
+  /* Slightly de-emphasised vs active — but still hits ~7:1 on the cream paper. */
+  color: var(--ink-2);
+}
 .track-tabs a[data-track-active='true'] {
   background: var(--ink);
   color: var(--paper);
@@ -647,6 +664,38 @@ pre code { background: transparent; border: 0; padding: 0; white-space: pre; fon
 }
 .icon-btn:hover { color: var(--ink); border-color: var(--ink-3); }
 
+/* Search button — pill with a visible kbd hint. Collapses to an icon on narrow screens. */
+.nav-search-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  padding: 0 0.7rem 0 0.65rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink-2);
+  font: inherit;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+.nav-search-btn:hover { color: var(--ink); border-color: var(--ink-3); }
+.nav-search-btn .nav-search-label {
+  font-family: var(--font-body);
+  font-size: var(--fs-meta);
+  color: var(--ink-3);
+}
+.nav-search-btn:hover .nav-search-label { color: var(--ink-2); }
+.nav-search-btn .nav-search-kbd {
+  font-family: var(--font-mono);
+  font-size: 0.72em;
+  border: 1px solid var(--rule);
+  padding: 0.05em 0.4em;
+  border-radius: 3px;
+  color: var(--ink-3);
+  background: var(--paper-2);
+}
+
 .menu-toggle { display: none; }
 
 @media (max-width: 1100px) {
@@ -661,12 +710,16 @@ pre code { background: transparent; border: 0; padding: 0; white-space: pre; fon
   .site-nav .container { gap: var(--sp-4); }
   .brand .brand-prefix { display: none; }
   .brand { font-size: 1.02rem; }
+  /* Collapse the search button to an icon so it still fits beside the menu toggle. */
+  .nav-search-btn { padding: 0 0.55rem; gap: 0; }
+  .nav-search-btn .nav-search-label,
+  .nav-search-btn .nav-search-kbd { display: none; }
 }
 
 @media (max-width: 360px) {
   .nav-links { gap: var(--sp-2); }
-  .nav-links .nav-search { display: none; }
   .icon-btn { width: 2.1rem; height: 2.1rem; }
+  .nav-search-btn { height: 2.1rem; }
 }
 
 /* ----------------------------------------------------------------------------
@@ -692,7 +745,10 @@ pre code { background: transparent; border: 0; padding: 0; white-space: pre; fon
   align-items: center;
   gap: 0.5rem;
   margin-bottom: var(--sp-3);
+  border: 0;
+  text-decoration: none;
 }
+.sidebar-track-label:hover { color: var(--accent); }
 .sidebar-track-label .track-dot {
   width: 0.65rem;
   height: 0.65rem;
@@ -778,9 +834,15 @@ pre code { background: transparent; border: 0; padding: 0; white-space: pre; fon
   padding: 0;
   margin: 0;
   border-left: 1px solid var(--rule);
+  /* Mirror the sidebar's "01 · 02 · …" numbering rhythm. */
+  counter-reset: toc-item;
 }
+.toc-list li { counter-increment: toc-item; }
 .toc-list a {
-  display: block;
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  align-items: baseline;
+  gap: 0.35rem;
   padding: 0.35rem 0 0.35rem 0.85rem;
   border: 0;
   border-left: 1px solid transparent;
@@ -788,6 +850,14 @@ pre code { background: transparent; border: 0; padding: 0; white-space: pre; fon
   color: var(--ink-2);
   line-height: 1.4;
 }
+.toc-list a::before {
+  content: counter(toc-item, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  color: var(--ink-3);
+  font-feature-settings: 'tnum';
+}
+.toc-list a.active::before { color: var(--accent); }
 .toc-list a:hover { color: var(--ink); }
 .toc-list a.active {
   color: var(--ink);
@@ -808,28 +878,34 @@ pre code { background: transparent; border: 0; padding: 0; white-space: pre; fon
   gap: var(--sp-2);
 }
 .crosstrack-list a {
-  border: 0;
-  display: grid;
-  grid-template-columns: auto 1fr;
+  display: flex;
   align-items: baseline;
-  gap: 0.6rem;
-  padding: 0.5rem 0.7rem;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-sm);
+  gap: 0.45rem;
+  padding: 0.25rem 0;
+  border: 0;
   background: transparent;
-  color: var(--ink-2);
-  transition: background 120ms ease, border-color 120ms ease;
+  /* Track accent is set inline on the <a> so the whole line tints together. */
+  line-height: 1.35;
+  transition: opacity 120ms ease;
 }
-.crosstrack-list a:hover { background: var(--paper-2); color: var(--ink); border-color: var(--ink-3); }
+.crosstrack-list a:hover { opacity: 0.75; }
+.crosstrack-list a .ct-arrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+}
 .crosstrack-list a .ct-track {
   font-family: var(--font-mono);
   font-size: var(--fs-micro);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
+.crosstrack-list a .ct-sep {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  opacity: 0.6;
+}
 .crosstrack-list a .ct-title {
   font-size: var(--fs-small);
-  line-height: 1.3;
 }
 
 /* ----------------------------------------------------------------------------
@@ -881,7 +957,7 @@ pre code { background: transparent; border: 0; padding: 0; white-space: pre; fon
 }
 .prevnext .pn-title {
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: var(--fs-h3);
   color: var(--ink);
   line-height: 1.25;
 }
@@ -913,6 +989,8 @@ pre code { background: transparent; border: 0; padding: 0; white-space: pre; fon
   grid-template-columns: 1fr auto;
   gap: var(--sp-5);
   align-items: end;
+  /* Mirror the article column width so the colophon doesn't sprawl. */
+  max-width: 64rem;
 }
 .site-footer .colophon {
   max-width: 36rem;
@@ -933,21 +1011,23 @@ pre code { background: transparent; border: 0; padding: 0; white-space: pre; fon
 }
 
 /* ----------------------------------------------------------------------------
-   Compliance disclaimer banner (enterprise)
+   Compliance disclaimer banner (enterprise) — rendered site-wide below the
+   nav by BaseLayout when track==='enterprise'. Full-bleed; not boxed.
    ---------------------------------------------------------------------------- */
 .compliance-banner {
   position: relative;
-  border: 1px solid var(--track-enterprise);
+  border: 0;
+  border-bottom: 1px solid var(--track-enterprise);
   background: var(--track-enterprise-soft);
   color: var(--ink);
-  padding: var(--sp-3) var(--sp-7) var(--sp-3) var(--sp-5);
+  padding: var(--sp-3) calc(var(--sp-7) + var(--sp-3)) var(--sp-3) var(--sp-6);
   font-size: var(--fs-meta);
   line-height: 1.5;
-  margin-bottom: var(--sp-6);
+  margin: 0;
   display: flex;
   align-items: center;
   gap: var(--sp-3);
-  border-radius: var(--radius-sm);
+  border-radius: 0;
 }
 .compliance-banner .stamp {
   font-family: var(--font-mono);
@@ -1275,6 +1355,14 @@ html.drawer-locked body { overflow: hidden; touch-action: none; }
   --pagefind-ui-border-radius: 2px;
   --pagefind-ui-font: var(--font-body);
 }
+/* Override Pagefind's default bright-yellow highlight to harmonise with the theme. */
+.pagefind-ui mark,
+.pagefind-ui .pagefind-ui__result-excerpt mark {
+  background: var(--accent-soft);
+  color: var(--ink);
+  padding: 0 0.1em;
+  border-radius: 2px;
+}
 
 /* ----------------------------------------------------------------------------
    Utility
@@ -1328,8 +1416,9 @@ html.drawer-locked body { overflow: hidden; touch-action: none; }
   /* Drop cap: scaled down and kept clear of the column edge */
   .prose .lede::first-letter,
   .docs-article .md-body h2#why-it-matters + p::first-letter {
-    font-size: 2.8em;
-    margin: 0.03em 0.1em 0 0;
+    font-size: 1.9em;
+    line-height: 1;
+    margin: 0.1em 0.12em 0 0;
   }
 
   /* Alternatives callout */

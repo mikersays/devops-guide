@@ -20,11 +20,11 @@ If your infrastructure is not in code, it is not reviewed, not repeatable, and n
 
 ## Recommended default
 
-**OpenTofu** (or Terraform if your org has no concerns about the BSL license shift) with remote state in your cloud's object storage and a state-locking mechanism.
+**OpenTofu** for new projects, with remote state in your cloud's object storage and a state-locking mechanism. The "they're basically the same" line has expired: by 2026 OpenTofu and Terraform have diverged enough that the choice matters.
 
 Concrete setup:
 
-- **Tool:** OpenTofu 1.7+ or Terraform 1.5+. Still interchangeable for new projects.
+- **Tool:** OpenTofu unless you're already on Terraform Enterprise / HCP Terraform and use its run features. The codebases now differ: OpenTofu ships built-in state encryption and an OCI-compatible module registry; Terraform's newer "stacks" and provider features are BSL-only. Existing Terraform codebases keep working on either tool, but new HCL written against TF-only features won't `plan` on OpenTofu, and vice versa. Pick one per repo and stick to it.
 - **State backend:** S3 + DynamoDB for locking on AWS (equivalents on GCP/Azure). Encrypted, versioned.
 - **Repo layout:** one repo for shared modules, one repo or directory per environment. Each environment owns its state file. Avoid one giant state file — blast radius is the whole company.
 - **Modules:** thin wrappers around cloud resources for custom needs; vetted public modules (e.g., `terraform-aws-modules`) for VPC, EKS, RDS.

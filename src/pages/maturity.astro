@@ -21,12 +21,12 @@ const { Content } = await render(entry);
 </PageLayout>
 
 <style is:global>
-  .m-header { padding-block: var(--sp-3) var(--sp-6); max-width: 60rem; }
+  .m-header { padding-block: var(--sp-3) var(--sp-6); max-width: 60rem; margin-inline: auto; }
   .m-header h1 { font-size: var(--fs-h1); margin-block: var(--sp-3) var(--sp-3); }
   .m-summary { font-size: var(--fs-lead); color: var(--ink-2); font-style: italic; }
 
   .m-content { padding-bottom: var(--sp-9); }
-  .m-prose { max-width: 64rem; }
+  .m-prose { max-width: 64rem; margin-inline: auto; }
   .m-prose h2 { font-size: var(--fs-h2); margin-top: var(--sp-7); }
 
   /* Heatmap-style maturity matrix table — when there are 6 columns (Domain + 5 levels) */

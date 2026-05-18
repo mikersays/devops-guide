@@ -18,6 +18,8 @@ This is a tool for honest self-assessment, not a leaderboard. Most healthy organ
 
 ## Domain by level
 
+> **Note on Security vs Compliance.** The maturity model keeps Security and Compliance as separate rows because they mature on different curves — a team can run a strong DevSecOps program while still having ad-hoc audit prep, or vice versa. The 12 canonical track sections collapse both into a single **Security** section (`08-security`) because for most teams the operational work overlaps too much to split. When you score yourself, score each row independently; when you read the track guide, expect the Security section to cover both surfaces.
+
 | Domain               | Level 1 (Initial)               | Level 2 (Managed)                  | Level 3 (Defined)                   | Level 4 (Measured)                       | Level 5 (Optimized)                       |
 | -------------------- | ------------------------------- | ---------------------------------- | ----------------------------------- | ---------------------------------------- | ----------------------------------------- |
 | Team structure       | No clear ownership              | Squads named, RACI informal        | RACI documented, platform vs product split | Team topologies measured, friction tracked | Self-balancing teams, regular reshapes    |

@@ -61,5 +61,5 @@ The platform team's mandate: build a **paved road** (golden path) — opinionate
 - [ ] Documented criteria for when to spin up a platform team
 - [ ] Platform team (when it exists) tracks DX metrics: time-to-first-deploy, paved-road adoption %
 - [ ] Quarterly cognitive-load review per team
-- [ ] No "deploy team" or "release engineer" role — see [CI/CD](./03-cicd.md)
+- [ ] No "deploy team" or "release engineer" role exists on the org chart
 - [ ] Org chart published and updated; teams have charters

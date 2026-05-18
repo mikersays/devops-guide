@@ -11,7 +11,7 @@ In a regulated environment, the Git repository is not just a developer tool. It 
 
 If you cannot prove, at any point in the past seven years, that a specific change to a regulated system was reviewed by someone other than its author, you have a control gap. If you can produce that evidence in seconds with a query, you have a control. The difference is almost entirely a matter of how source control is configured. Most enterprises already have GitHub Enterprise or GitLab; most fail to use those tools as the systems of record they could be.
 
-Beyond audit, the business risk of weak source control is supply-chain compromise. Unsigned commits, missing branch protection, and overly broad write permissions are the entry points for the breaches that show up in the SEC filings of your peers.
+Beyond audit, weak source control is the prevailing entry point for supply-chain compromise. The breaches that are now disclosed under the SEC Item 1.05 cyber rule (in force since December 2023) and that drive your peers' 8-K filings follow a familiar pattern: an unsigned commit slipped into a default branch, a forgotten admin-bypass on a protection rule, a long-lived PAT scraped from a developer laptop, an over-permissive write on a build repo.
 
 ## What "good" looks like
 
@@ -29,7 +29,7 @@ Beyond audit, the business risk of weak source control is supply-chain compromis
 - SSO via your IdP (Okta, Entra ID, Ping); SCIM provisioning; no local accounts.
 - Branch protection rulesets applied at the org level, scoped by repo topic, so new repos inherit the right policy.
 - Required signed commits via SSH or GPG keys issued through the IdP; rotate annually.
-- Required pull request reviews: minimum two approvers, at least one from CODEOWNERS, dismiss stale reviews on push, require resolution of conversations.
+- Required pull request reviews: **minimum two approvers** (this is the canonical approver-count for regulated repos and is referenced from [CI/CD](./03-cicd.md)), at least one from CODEOWNERS, dismiss stale reviews on push, require resolution of conversations.
 - Required status checks: SAST, SCA, secret scan, IaC policy scan, build, unit tests. See [Security](./08-security.md) for the full list.
 - GitHub Advanced Security enabled: secret scanning with push protection, code scanning, Dependabot.
 - Audit log streaming to your SIEM. See [Observability](./06-observability.md).
@@ -45,12 +45,16 @@ For the monorepo vs polyrepo question at scale: prefer a small number of well-bo
 
 ## Compliance mapping
 
+> Framework versions per [Overview](./00-overview.md): Annex A clauses reference ISO/IEC 27001:2022; NIST controls reference 800-53 Rev 5; SOC 2 TSC references are the 2017 criteria with the 2022 points-of-focus update.
+
 | Practice | SOC 2 (TSC) | ISO 27001 (Annex A) | NIST 800-53 |
 |---|---|---|---|
-| Code review enforcement | CC8.1 | A.8.32 | CM-3, SA-11 |
-| Segregation of duties (author != approver) | CC1.4 | A.5.3 | AC-5 |
+| Code review (peer-reviewed change) | CC8.1 | A.8.28 | SA-11 |
+| Authorized change with approval | CC8.1 | A.8.32 | CM-3 |
+| Segregation of duties (author != approver) | CC5.1, CC6.3 | A.5.3 | AC-5 |
 | Signed commits and provenance | CC7.1 | A.8.28 | SA-10, SI-7 |
-| Audit log retention | CC7.2 | A.8.15 | AU-2, AU-11 |
+| Audit log generation | CC7.2 | A.8.15 | AU-2 |
+| Audit log retention | CC7.2 | A.5.33 | AU-11 |
 | Access provisioning via IdP | CC6.1, CC6.2 | A.5.16, A.5.18 | AC-2 |
 
 ## Common pitfalls

@@ -28,18 +28,20 @@ Concrete setup:
 - **Identity:** IAM Identity Center federated to your IDP. No IAM users for humans. CI uses OIDC + IAM roles.
 - **Networking:** one VPC per account per region. Private subnets for compute, public only for load balancers. NAT gateway for egress; VPC endpoints to avoid the bill. Transit Gateway only when you have something to connect.
 - **DNS:** Route 53 with a public zone per environment.
-- **Secrets:** AWS Secrets Manager or SSM Parameter Store. Never `.env` files in S3.
+- **Secrets:** AWS Secrets Manager or SSM Parameter Store.
 
 For compute, pick the simplest primitive that fits:
 
 | Workload | Reach for |
 |---|---|
 | Static site / SPA | CloudFront + S3, or Vercel/Netlify |
-| Single web service | App Runner, ECS Fargate, Cloud Run, Render |
+| Single web service | App Runner, ECS Fargate, Cloud Run, Render, Railway, Northflank |
 | 2-10 services | ECS Fargate, Cloud Run |
 | 10+ services with platform team | EKS / GKE |
 | Background jobs | Lambda, Cloud Functions, ECS scheduled tasks |
 | Stateful (DBs, caches) | Managed services. RDS, ElastiCache, Aurora — never self-host. |
+
+On the "single web service" row: **Render**, **Railway**, and **Northflank** are the current contenders for the "AWS is too much, just run my container" slot. Fly.io was here too, but the 2023-2024 control-plane and networking incidents knocked it out of the default position; pick it deliberately for the edge-compute workloads it's good at, not as a general PaaS.
 
 **Reach for Kubernetes only when** you have 10+ services, a person who can own the cluster, and you have felt the pain of not having it. Most orgs under 50 engineers do not need it.
 

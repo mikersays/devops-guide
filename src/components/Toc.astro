@@ -6,7 +6,11 @@ interface Props {
 }
 
 const { headings } = Astro.props;
-const tocHeadings = headings.filter((h) => h.depth === 2);
+// Defensive: strip trailing whitespace and any '§' that may have leaked in from
+// rehype-autolink-headings. (The current config injects the glyph via CSS, but
+// belt-and-suspenders — keeps the TOC clean if the plugin config ever drifts.)
+const cleanText = (s: string) => s.replace(/\s*[§]+\s*$/, '').trimEnd();
+const tocHeadings = headings.filter((h) => h.depth === 2).map((h) => ({ ...h, text: cleanText(h.text) }));
 ---
 
 {tocHeadings.length > 0 && (

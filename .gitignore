@@ -26,3 +26,6 @@ public/pagefind/
 
 # playwright
 .playwright-mcp/
+
+# UI/UX audit artefacts (regenerated on demand)
+audit-screenshots/

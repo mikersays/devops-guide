@@ -27,8 +27,10 @@ const byTrack = new Map(entries.map((e) => [e.track, e]));
       const meta = TRACKS[t];
       return (
         <li>
-          <a href={entry.href}>
-            <span class="ct-track" style={`color:${meta.accent}`}>{meta.short}</span>
+          <a href={entry.href} style={`color:${meta.accent}`}>
+            <span class="ct-arrow" aria-hidden="true">→</span>
+            <span class="ct-track">{meta.short}</span>
+            <span class="ct-sep" aria-hidden="true">·</span>
             <span class="ct-title">{entry.title}</span>
           </a>
         </li>

@@ -29,9 +29,20 @@ export default defineConfig({
       [
         rehypeAutolinkHeadings,
         {
+          // The anchor is appended *inside* the heading. Previously its
+          // `content` was a text node `§`, which leaked into Astro's heading
+          // collector (right-rail TOC rendered "Why it matters§") and into
+          // Pagefind search snippets. The fix: keep `behavior: 'append'` but
+          // give the anchor empty text — the visible glyph is rendered via
+          // CSS (`.heading-anchor::after`) so it never enters the DOM text.
+          // `data-pagefind-ignore` is belt-and-suspenders.
           behavior: 'append',
-          properties: { className: ['heading-anchor'], 'aria-label': 'Permalink' },
-          content: { type: 'text', value: '§' },
+          properties: {
+            className: ['heading-anchor'],
+            'aria-label': 'Permalink',
+            'data-pagefind-ignore': '',
+          },
+          content: [],
         },
       ],
       rehypeContent,

@@ -18,13 +18,14 @@ const { track, sections, currentSlug } = Astro.props;
 const meta = TRACKS[track];
 const currentIdx = sections.findIndex((s) => s.slug === currentSlug);
 const progress = currentIdx >= 0 ? Math.round(((currentIdx + 1) / sections.length) * 100) : 0;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <aside class="sidebar" aria-label={`${meta.label} track navigation`}>
-  <div class="sidebar-track-label">
+  <a class="sidebar-track-label" href={`${base}/${track}/`}>
     <span class="track-dot" style={`background:${meta.accent}`}></span>
     <span>{meta.short} · {meta.label}</span>
-  </div>
+  </a>
   <ol class="sidebar-section-list">
     {sections.map((s) => (
       <li>

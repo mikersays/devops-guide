@@ -11,7 +11,7 @@ In a regulated org of 200+ engineers, "DevOps" is not a team. It is a contract b
 
 Auditors and regulators look hard at who can change what. Concentrating change authority in a single team is a control weakness even when it feels efficient. Spreading it across four functions with clear interfaces gives you defensible segregation, resilience under headcount loss, and a credible answer when someone asks "who reviewed this production change at 2 a.m.?"
 
-The business risk is twofold. A poorly-bounded platform team becomes the single chokepoint for every product team's roadmap, and engineering velocity collapses across the org. An under-resourced compliance function cannot keep up with engineering change, and undetected control failures accumulate and surface during audit fieldwork.
+Two failure modes show up at scale. The first is the chokepoint: a poorly-bounded platform team becomes the only path to production for every product team, and roadmap velocity collapses while the platform org backlog grows to multiple quarters. The second is the silent gap: an under-resourced Compliance Engineering function cannot keep up with engineering change, so control evidence falls out of date, and the gap surfaces only when audit fieldwork starts and the answers do not match the systems.
 
 ## What "good" looks like
 
@@ -37,8 +37,6 @@ For the **CAB**, replace the weekly meeting with a tiered model:
 - **Normal changes**: reviewed asynchronously in the ticketing system by named approvers from CODEOWNERS plus a peer from another team for SoD.
 - **Emergency changes**: post-hoc review by the CAB chair within 24 hours, with full evidence pack.
 
-## Alternatives
-
 > **Alternatives:**
 > - **Embedded model** (Spotify-style squads with embedded SRE/AppSec): pick this when product lines are independent enough to support their own specialists and you have the headcount.
 > - **Centralized model** (one large Platform org with internal sub-teams): pick this when you need tight control over a single platform and product teams are not yet mature enough to own production.
@@ -46,14 +44,16 @@ For the **CAB**, replace the weekly meeting with a tiered model:
 
 ## Compliance mapping
 
+> Framework versions per [Overview](./00-overview.md): Annex A clauses reference ISO/IEC 27001:2022; NIST controls reference 800-53 Rev 5; SOC 2 TSC references are the 2017 criteria with the 2022 points-of-focus update.
+
 | Practice | SOC 2 (TSC) | ISO 27001 (Annex A) | NIST 800-53 |
 |---|---|---|---|
-| Segregation of duties between author and approver | CC1.4, CC8.1 | A.5.3, A.8.2 | AC-5 |
-| Defined roles and responsibilities | CC1.3 | A.5.2 | PS-2 |
+| Segregation of duties between author and approver | CC5.1, CC6.3, CC8.1 | A.5.3, A.8.2 | AC-5 |
+| Defined roles and responsibilities | CC1.3 | A.5.2 | PM-2, PS-9 |
 | Change advisory / authorization process | CC8.1 | A.8.32 | CM-3 |
-| Personnel screening for privileged access | CC1.4 | A.6.1 | PS-3 |
+| Personnel screening for privileged access | CC1.4, CC1.5 | A.6.1 | PS-3 |
 
-Mappings are conservative; your auditor will have opinions on which controls map cleanly.
+Mappings are conservative; your auditor will have opinions on which controls map cleanly. The SoD row maps to CC5.1/CC6.3 (control activities including separation of conflicting duties) rather than CC1.4 (which is closer to background screening and personnel discipline). The roles row maps to PM-2 (Information Security Program Leadership) and PS-9 (Position Descriptions); PS-2 is "Position Risk Designation," a narrower control.
 
 ## Common pitfalls
 

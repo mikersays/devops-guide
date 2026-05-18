@@ -35,14 +35,16 @@ const isActive = (path: string) => currentPath === path || currentPath.startsWit
       <a href={`${base}/maturity/`} class:list={['nav-text-link', isActive(`${base}/maturity`) && 'active']}>Maturity</a>
       <a href={`${base}/choose-your-track/`} class:list={['nav-text-link nav-aux', isActive(`${base}/choose-your-track`) && 'active']}>Choose track</a>
 
-      <button class="icon-btn nav-search" type="button" id="open-search" aria-label="Search" title="Search (press /)">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <button class="nav-search-btn" type="button" id="open-search" aria-label="Search the manual" title="Search (press / or Ctrl/Cmd+K)">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
           <circle cx="7" cy="7" r="5" />
           <line x1="11" y1="11" x2="14" y2="14" />
         </svg>
+        <span class="nav-search-label">Search</span>
+        <kbd class="nav-search-kbd" aria-hidden="true">/</kbd>
       </button>
-      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Toggle theme">
-        <svg class="theme-icon-light" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Toggle theme" aria-pressed="false" title="Switch theme">
+        <svg class="theme-icon-light" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
           <circle cx="8" cy="8" r="3" />
           <line x1="8" y1="1" x2="8" y2="3"/>
           <line x1="8" y1="13" x2="8" y2="15"/>
@@ -53,7 +55,7 @@ const isActive = (path: string) => currentPath === path || currentPath.startsWit
           <line x1="13" y1="3" x2="11.5" y2="4.5"/>
           <line x1="4.5" y1="11.5" x2="3" y2="13"/>
         </svg>
-        <svg class="theme-icon-dark" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="display:none">
+        <svg class="theme-icon-dark" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="display:none" aria-hidden="true">
           <path d="M14 9.5A6 6 0 0 1 6.5 2 6 6 0 1 0 14 9.5z"/>
         </svg>
       </button>

@@ -51,6 +51,10 @@ On a 3-person on-call, one person can wear multiple hats — but the roles must 
 - **Hand-off ritual**: 15-minute meeting at start of shift to walk through open incidents, recent deploys, known weirdness
 - **Follow-the-sun** once you have engineers in 2+ time zones — eliminate night pages where possible
 
+### LLM-assisted tooling
+
+The current crop of incident copilots — **Rootly Copilot**, **PagerDuty AIOps**, **incident.io Copilot** — are useful for the boring parts: summarizing a noisy Slack channel into a draft timeline, reconstructing what happened from logs and chat, generating a first-pass postmortem skeleton. Use them there. Do **not** let them drive severity calls, comms decisions, or remediation choices — those still need a human who owns the outcome. Treat their output the way you'd treat a junior engineer's first draft: helpful, never authoritative.
+
 ### Blameless postmortems
 
 - Within 5 business days of any SEV-1/2

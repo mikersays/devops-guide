@@ -37,6 +37,8 @@ Pillars to build, in order:
 4. **Tracing** — start with the request path through your top 5 services.
 5. **SLOs and error budgets** — once 1-3 are stable, add SLOs for Tier 1 services and budget-based alerts.
 
+Once the basics are in place, eBPF-based tooling is worth adding as a second layer. **Parca** or **Pyroscope** give you continuous profiling — always-on CPU and memory flamegraphs — with overhead low enough to run in prod. **Cilium** (and its Hubble UI) gives you network-flow observability at the kernel level, which is the only reasonable way to see what's actually talking to what on Kubernetes. Neither is a day-one need; both pay off the first time you have to debug "why is this service slow" or "why is east-west traffic up 4x."
+
 > **Alternatives:**
 > - **Self-hosted Prometheus + Loki + Grafana + Tempo (LGTM stack)** — pick if you have platform engineering capacity and want to control cost at scale. Operationally non-trivial.
 > - **New Relic** — pick if you want a strong APM-first vendor with predictable per-user pricing.
@@ -47,7 +49,7 @@ Pillars to build, in order:
 
 For each Tier 1 service: define 1-3 SLOs (typically availability and latency), set an error budget from the target, and alert on **burn rate** rather than raw thresholds. Page only when burn rate threatens to exhaust the budget within hours.
 
-Alerting hygiene: every page must be actionable, urgent, and real. Use three categories: page (wakes someone), ticket (business hours), info (dashboard only). Every page links to a [runbook](./07-incident-response.md). A page that fires weekly without triggering action is broken — tune it or delete it.
+Alerting hygiene: every page must be actionable, urgent, and real. The page / ticket / info split is covered in [Incident Response](./07-incident-response.md#severity-matrix); use the same categories here so alert routing matches severity. Every page links to a runbook. A page that fires weekly without triggering action is broken — tune it or delete it.
 
 ## Common pitfalls
 

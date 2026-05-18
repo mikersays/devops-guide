@@ -27,11 +27,17 @@ Pick boring, widely-adopted tools. Optimize for engineer mobility (people you hi
 - **GitHub** for source control and CI
 - **Terraform / OpenTofu** for infrastructure
 - **AWS** as the primary cloud (GCP/Azure are fine substitutes)
-- **Kubernetes only when justified** — managed compute (ECS, Cloud Run, Fly, Render) is often enough
+- **Kubernetes only when justified** — managed compute (ECS, Cloud Run, Render, Railway) is often enough
 - **Datadog or Grafana Cloud** for observability
 - **PagerDuty** for on-call
 
 You'll see these defaults reappear across [CI/CD](./03-cicd.md), [IaC](./04-iac.md), and [Cloud Platform](./05-cloud-platform.md).
+
+> **Alternatives:**
+> - **GitLab end-to-end** — pick if you want source control, CI, and registry from one vendor and have ops capacity for self-hosting (or budget for GitLab.com Premium).
+> - **GCP-native stack** — pick if your team is data/ML-heavy or already lives in BigQuery. Cloud Run is a stronger default than ECS at small scale.
+> - **PaaS-first (Render / Railway / Fly)** — pick under 5 engineers when AWS itself is the bottleneck. You will outgrow it; that's fine.
+> - **Azure-native** — pick if you sell into Microsoft-heavy verticals or your identity already lives in Entra.
 
 ## Tradeoffs vs. other tracks
 
